@@ -3,3 +3,7 @@ root = true
 [*]
 indent_style = tabs
 indent_size = 2
+
+[*.tf]
+indent_style = spaces
+indent_size = 2

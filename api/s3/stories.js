@@ -1,33 +1,50 @@
+const AWS = require('aws-sdk')
 const R = require('ramda')
-const uuid = require('uuid/v4')
-const { storiesS3 } = require('./init')
 
-const bucket = process.env.S3_STORIES_BUCKET
+const storiesS3 = new AWS.S3({
+  accessKeyId: process.env.AWS_STORIES_USER_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_STORIES_USER_SECRET,
+  region: process.env.AWS_STORIES_REGION
+})
+const bucket = process.env.AWS_S3_STORIES_BUCKET
 
-function list() {
+const keyForHMACStory = (hmac) => `stories/hmac/${hmac}`
+
+function listStoryHMACs() {
   return storiesS3.listObjectsV2({
-    Bucket: bucket
-  }).promise()
-  .then(R.prop('Contents'))
-}
-
-function create(storyJSON, id = uuid()) {
-  return storiesS3.upload({
     Bucket: bucket,
-    Key: id,
-    Body: JSON.stringify(storyJSON)
+    Prefix: 'stories/hmac/'
   }).promise()
+  .then(R.pipe(
+    R.prop('Contents'),
+    R.map(R.pipe(
+      R.prop('Key'),
+      R.objOf('id')
+    ))
+  ))
 }
 
-function read(id) {
+function readHMACStory(hmac) {
   return storiesS3.getObject({
     Bucket: bucket,
-    Key: id,
+    Key: keyForHMACStory(hmac),
   }).promise()
+}
+
+function upload(key, body) {
+  return storiesS3.upload({
+    Bucket: bucket,
+    Key: key,
+    Body: body
+  }).promise()
+}
+
+function uploadHMACStory(hmac, jsonString) {
+  return upload(keyForHMACStory(hmac), jsonString)
 }
 
 module.exports = {
-  list,
-  create,
-  read
+  listStoryHMACs,
+  readHMACStory,
+  uploadHMACStory
 }

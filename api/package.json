@@ -2,16 +2,19 @@
   "name": "royal-stories-api",
   "version": "0.1.0",
   "description": "API for Royal Stories",
-  "main": "index.js",
+  "main": "routes/index.js",
   "author": "Patrick Smith",
   "license": "MIT",
   "scripts": {
     "start": "yarn run start:dev",
     "start:dev": "PORT=7000 NODE_ENV=development node app.js",
-    "start:prod": "node app.js"
+    "start:prod": "node app.js",
+    "now-start": "npm run start:prod"
   },
   "dependencies": {
+    "ava": "^0.17.0",
     "aws-sdk": "^2.7.24",
+    "dyno": "^1.4.1",
     "hapi": "^16.1.0",
     "joi": "^10.2.0",
     "ramda": "^0.23.0",

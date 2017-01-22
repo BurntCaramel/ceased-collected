@@ -12,7 +12,10 @@ if (process.env.NODE_ENV === 'development') {
 const server = new Hapi.Server()
 server.connection({
 	address: process.env.HOST,
-	port: (process.env.PORT || 80)
+	port: (process.env.PORT || 80),
+  routes: {
+    cors: true
+  }
 })
 
 server.route(require('./routes'))

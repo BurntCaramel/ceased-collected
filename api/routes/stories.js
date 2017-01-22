@@ -1,6 +1,9 @@
 const Joi = require('joi')
 const R = require('ramda')
-const { list, create, read } = require('../s3/stories')
+const { uploadStoryContent } = require('../commands/stories')
+const { listStories, readHMACStory } = require('../queries/stories')
+const { enqueueEvents } = require('../sqs/events')
+const { readEvents } = require('../dynamo/events')
 
 module.exports = [
 	{
@@ -8,22 +11,22 @@ module.exports = [
 		path: '/stories',
 		handler(req, reply) {
 			reply(
-				list()
+				listStories()
 			)
 		}
 	},
 	{
 		method: 'GET',
-		path: '/stories/{id}',
+		path: '/stories/256:{hmac}',
 		handler(req, reply) {
-			const { id } = req.params
-			read(id)
+			const { hmac } = req.params
+			readHMACStory(hmac)
 			.then(({ ContentLength, ETag, Body }) => {
 				reply(Body)
 				.bytes(ContentLength)
 				.type('json')
 				.etag(ETag)
-			}, reply)
+			})
 			.catch(reply)
 		}
 	},
@@ -43,18 +46,42 @@ module.exports = [
 			}
 		},
 		handler(req, reply) {
+			// TODO: signed in
+			const userID = null
+			const organizationID = null
+			
 			const {
-				title = 'Untitled',
 				body,
 				ingredients = []
 			} = req.payload
 
-			reply(
-				create({
-					title, body, ingredients
-				})
-				.then(R.prop('Key'))
-			)
+			uploadStoryContent({
+				version: 1,
+				body,
+				ingredients
+			}, userID, organizationID)
+			.then(({ data, events }) => {
+        // TODO: send events
+        enqueueEvents(events)
+        .then(() => {
+
+        })
+        .catch(error => {
+          // TODO: process error
+        })
+
+        // Reply with data
+				reply({ data })
+				.code(201) // Created
+				.location(`/stories/256:${data.contentHMAC}`)
+			})
 		}
-	}
+	},
+  {
+    method: 'GET',
+    path: '/_events',
+    handler(req, reply) {
+      reply(readEvents())
+    }
+  }
 ]
