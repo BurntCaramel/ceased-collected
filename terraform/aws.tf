@@ -178,7 +178,7 @@ resource "aws_dynamodb_table" "organization-referenced-content" {
   }
 
   attribute {
-    name = "type" # Never changed
+    name = "type"
     type = "S"
   }
 
