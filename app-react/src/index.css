@@ -1,5 +1,140 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+html {
+	font-size: 18px;
+	font-size: calc(112.5% + 2 * (100vw - 600px) / 400);
+	background: #fef8fc;
+	color: #FF3D76;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
+	box-sizing: border-box;
+	max-width: 100vw;
+	margin: auto;
+	padding: 1.333333333rem 1.7em;
+	line-height: 1.333333333rem;
+	font-family: system, "-apple-system", "-webkit-system-font", BlinkMacSystemFont, "Helvetica Neue", "Helvetica", "Segoe UI", "Roboto", "Arial", "freesans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	-webkit-hypens: auto; -ms-hypens: auto; hypens: auto;
+}
+
+header > *,
+section > *,
+section article > * {
+	max-width: 30rem;
+	margin: auto;
+}
+section div {
+	max-width: none;
+}
+
+header > *,
+article > *,
+section > *,
+footer > * {
+	position: relative;
+	font-size: 1rem;
+	line-height: 1.333333333rem;
+	top: 0.3333333329999999rem;
+}
+/* header h1,
+article h2,
+article h3,
+article > p,
+article ul,
+article ol,
+article dt,
+article pre,
+article hr { */
+header > *,
+article > *,
+section > * {
+	margin-bottom: 1.333333333rem;
+}
+
+header h1,
+header + section > h2:first-child {
+	text-align: center;
+}
+
+header h1 {
+	position: relative;
+	font-size: 2rem;
+	line-height: 2.666666666rem;
+	top: 0.6666666659999998rem;
+
+	font-weight: bold;
+}
+
+section h2 {
+	position: relative;
+	font-size: 1.2rem;
+	line-height: 1.333333333rem;
+	top: 0.13333333299999994rem;
+
+	font-weight: bold;
+}
+section h3,
+section nav dt {
+	text-transform: uppercase;
+	font-weight: bold;
+}
+section pre {
+	overflow: auto;
+	width: calc(50% + (30rem / 2));
+	margin-left: calc((100% - 30rem) / 2);
+	background-color: #eef8f8;
+}
+
+section article,
+section dl,
+section dd,
+section figure {
+	margin: auto;
+	width: auto;
+}
+section dt {
+	margin-bottom: 0;
+	font-weight: bold;
+}
+section dd {
+	margin-left: 1em;
+	margin-right: 0;
+}
+
+section a {
+	//color: #9647E8;
+	//color: #be30ff;
+	//color: #ce47e8;
+	//color: #dd30ff;
+	//color: #d230ff;
+	//color: #b04bf2;
+	//color: #ad45cf;
+	color: #CD00CD;
+	text-decoration: none;
+	
+	border-bottom: 1px solid currentColor;
+}
+section > a,
+section > button {
+	display: inline-block;
+	font-size: 1rem;
+	text-align: center;
+	background-color: #FF3D76;
+	color: #fef8fc;
+	padding: 0.5rem 0.7rem;
+	border: none;
+	border-radius: 3px;
+}
+section > a.primary,
+section > button.primary {
+	display: block;
+	width: 100%;
+	padding: 1rem 0.7rem;
+}
+section > a > h2 {
+	top: 0;
 }
