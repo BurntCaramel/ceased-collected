@@ -1,9 +1,19 @@
 const Joi = require('joi')
+const Boom = require('boom')
 const R = require('ramda')
 const { uploadStoryContent } = require('../commands/stories')
 const { listStories, readHMACStory } = require('../queries/stories')
 const { enqueueEvents } = require('../sqs/events')
 const { readEvents } = require('../dynamo/events')
+
+const storyValidator = Joi.object({
+	//title: Joi.string().optional(),
+	body: Joi.string().trim().required(),
+	ingredients: Joi.array().items(Joi.object({
+		id: Joi.string(),
+		type: Joi.string()
+	})).optional()
+})
 
 module.exports = [
 	{
@@ -17,7 +27,15 @@ module.exports = [
 	},
 	{
 		method: 'GET',
-		path: '/stories/256:{hmac}',
+		path: '/stories/256/{hmac}',
+		config: {
+			cors: true,
+			validate: {
+				params: {
+					hmac: Joi.string().hex().required()
+				}
+			}
+		},
 		handler(req, reply) {
 			const { hmac } = req.params
 			readHMACStory(hmac)
@@ -27,7 +45,9 @@ module.exports = [
 				.type('json')
 				.etag(ETag)
 			})
-			.catch(reply)
+			.catch(error => {
+				reply(Boom.wrap(error, error.statusCode))
+			})
 		}
 	},
 	{
@@ -38,11 +58,7 @@ module.exports = [
 				output: 'data'
 			},
 			validate: {
-				payload: Joi.object({
-					title: Joi.string().optional(),
-					body: Joi.string().required(),
-					ingredients: Joi.array().items(Joi.string()).optional()
-				})
+				payload: storyValidator
 			}
 		},
 		handler(req, reply) {
@@ -61,27 +77,30 @@ module.exports = [
 				ingredients
 			}, userID, organizationID)
 			.then(({ data, events }) => {
-        // TODO: send events
-        enqueueEvents(events)
-        .then(() => {
+				// TODO: send events
+				enqueueEvents(events)
+				.then(() => {
 
-        })
-        .catch(error => {
-          // TODO: process error
-        })
+				})
+				.catch(error => {
+					// TODO: process error
+				})
 
-        // Reply with data
+				// Reply with data
 				reply({ data })
 				.code(201) // Created
-				.location(`/stories/256:${data.contentHMAC}`)
+				.location(`/stories/256/${data.contentHMAC}`)
 			})
+      .catch(error => {
+        reply(error)
+      })
 		}
 	},
-  {
-    method: 'GET',
-    path: '/_events',
-    handler(req, reply) {
-      reply(readEvents())
-    }
-  }
+	{
+		method: 'GET',
+		path: '/_events',
+		handler(req, reply) {
+			reply(readEvents())
+		}
+	}
 ]

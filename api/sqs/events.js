@@ -18,6 +18,17 @@ const state = observable({
 	//errors: observable.shallowArray([])
 })
 
+const deleteReceivedMessages = data => (
+  eventsSQS.deleteMessageBatch({
+    Entries: data.Messages.map((message, index) => ({
+      Id: `${ index }`,
+      ReceiptHandle: message.ReceiptHandle
+    })),
+    QueueUrl: sqsURL
+  })
+  .promise()
+)
+
 const processReceivedMessages = data => {
   console.log('processReceivedMessages', data)
   if (data.Messages) {
@@ -28,7 +39,16 @@ const processReceivedMessages = data => {
       return Object.assign({}, event, { timestamp })
     })
 
+    const deleteEntries = data.Messages.map((message, index) => ({
+      Id: `${ index }`,
+      ReceiptHandle: message.ReceiptHandle
+    }))
+
     return writeEvents(events)
+    .then(response => {
+      // FIXME: skip unprocessed events
+      return deleteReceivedMessages(data)
+    })
     .then(action(() => {
       state.successCount += 1
     }))
@@ -37,7 +57,7 @@ const processReceivedMessages = data => {
     runInAction(() => {
       state.successCount += 1
 
-      enqueueEvents([{ section: 'test', type: 'test.blah' }])
+      //enqueueEvents([{ section: 'test', type: 'test.blah' }])
     })
   }
 }
