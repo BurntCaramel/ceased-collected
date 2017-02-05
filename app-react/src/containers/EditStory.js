@@ -5,7 +5,9 @@ export default function EditStory({ hmac, onSaveStory }) {
 	return (
 		<section>
 			{ hmac == null &&
-				<h1>Create an #lofi story</h1>
+				<header>
+					<h1>Create a #lofi story</h1>
+				</header>
 			}
 			<StoryEditor
 				hmac={ hmac }
