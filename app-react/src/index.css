@@ -25,9 +25,11 @@ header > *,
 section > *,
 section article > * {
 	max-width: 30rem;
-	margin: auto;
+	margin-left: auto;
+	margin-right: auto;
 }
-section div {
+section > div,
+section article > div {
 	max-width: none;
 }
 
