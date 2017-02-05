@@ -8,7 +8,7 @@
   "dependencies": {
     "axios": "^0.15.3",
     "cookie": "^0.3.1",
-    "gateau": "0.1.8",
+    "gateau": "0.2.4",
     "jwt-decode": "^2.1.0",
     "mobx": "^3.0.2",
     "mobx-location": "^0.1.1",
@@ -24,6 +24,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-		"now-start": "cd build && serve --single"
+    "now-start": "cd build && serve --single"
   }
 }
