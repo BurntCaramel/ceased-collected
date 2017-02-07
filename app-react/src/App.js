@@ -5,6 +5,7 @@ import Cookie from 'cookie'
 import decodeJWT from 'jwt-decode'
 import * as storiesAPI from './api/stories'
 import * as eventsAPI from './api/events'
+import GoogleAnalyticsSnippet from './components/GoogleAnalyticsSnippet'
 import StoryEditor from './components/StoryEditor'
 import EventList from './components/EventList'
 import makeLoadable from './components/makeLoadable'
@@ -106,6 +107,7 @@ class App extends Component {
 				<Routes
 					onSaveStory={ this.saveNewStory.start }
 				/>
+				<GoogleAnalyticsSnippet />
 			</main>
 		);
 	}
