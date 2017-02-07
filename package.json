@@ -1,6 +1,7 @@
 {
   "scripts": {
+		"start": "cd app-react && yarn start",
     "deploy:api": "cd api && node .deploy.js",
-		"deploy:app-react": "cd app-react && now -e REACT_APP_API_URL=https://1.stories.icing.space"
+    "deploy:app-react": "cd app-react && now -e REACT_APP_API_URL=https://1.stories.icing.space"
   }
 }
