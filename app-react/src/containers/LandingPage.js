@@ -21,6 +21,7 @@ export default function LandingPage({ onSaveStory }) {
 				</a>
 				<StoryEditor hmac='30fe67f8aad9529f22e48344700846add63887ce18a203bd189deeb76f60447c' />
 				<StoryEditor hmac='d948775d99340265db8085f1b2e39da48331d390e079f1bc168075b5113b3b95' />
+				<div style={{ height: '0.5rem' }} />
 				<NewsletterSignUp />
 			</section>
 		</div>
