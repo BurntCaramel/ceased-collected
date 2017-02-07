@@ -2455,9 +2455,9 @@ function-bind@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771"
 
-gateau@0.2.4:
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/gateau/-/gateau-0.2.4.tgz#c2335d0128631d73db52a32cede18e7ab3a71bfa"
+gateau@0.2.5:
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/gateau/-/gateau-0.2.5.tgz#a5f7e006394fa33f515fad58f6acda326e921377"
   dependencies:
     creed "^1.0.3"
     lodash "^4.14.1"
