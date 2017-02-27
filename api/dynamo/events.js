@@ -1,5 +1,9 @@
 const Dyno = require('dyno')
 const R = require('ramda')
+const {
+	convertItemsToPutRequests,
+	readAllFrom
+} = require('./utils')
 
 const eventsTable = process.env.AWS_DYNAMODB_EVENTS_TABLE
 
@@ -12,16 +16,11 @@ const eventsDyno = Dyno({
 
 //const writeStream = eventsDyno.putStream()
 
-const convertEventsToPutRequests = R.map(R.pipe(
-  R.objOf('Item'),
-  R.objOf('PutRequest')
-))
-
 function writeEvents(events) {
   return new Promise((resolve, reject) => {
     eventsDyno.batchWriteAll({
       RequestItems: {
-        [eventsTable]: convertEventsToPutRequests(events)
+        [eventsTable]: convertItemsToPutRequests(events)
       }
   }, 10 /* retries */)
     .sendAll((error, data) => {
@@ -37,20 +36,11 @@ function writeEvents(events) {
   })
 }
 
-function readEvents() {
-  return new Promise((resolve, reject) => {
-    eventsDyno.scan({ Pages: 1 }, (error, data) => {
-      if (error) {
-        reject(error)
-      }
-      else {
-        resolve(data.Items)
-      }
-    })
-  })
+function readAllEvents() {
+	return readAllFrom(eventsDyno)
 }
 
 module.exports = {
   writeEvents,
-  readEvents
+  readAllEvents
 }

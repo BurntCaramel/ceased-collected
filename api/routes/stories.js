@@ -4,7 +4,7 @@ const R = require('ramda')
 const { uploadStoryContent } = require('../commands/stories')
 const { listStories, readHMACStory } = require('../queries/stories')
 const { enqueueEvents } = require('../sqs/events')
-const { readEvents } = require('../dynamo/events')
+const { readAllEvents } = require('../dynamo/events')
 
 const storyValidator = Joi.object({
 	//title: Joi.string().optional(),
@@ -100,7 +100,7 @@ module.exports = [
 		method: 'GET',
 		path: '/_events',
 		handler(req, reply) {
-			reply(readEvents())
+			reply(readAllEvents())
 		}
 	}
 ]

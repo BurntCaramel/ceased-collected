@@ -115,10 +115,32 @@ data "aws_iam_policy_document" "events-dynamodb" {
   }
 }
 
+data "aws_iam_policy_document" "ids-dynamodb" {
+  statement {
+    resources = [
+      "${aws_dynamodb_table.ids.arn}",
+    ]
+
+    actions = [
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:GetItem",
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:UpdateItem",
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "organization-referenced-content-dynamodb" {
   statement {
     resources = [
       "${aws_dynamodb_table.organization-referenced-content.arn}",
+      "${aws_dynamodb_table.organization-referenced-content.arn}/*",
     ]
 
     actions = [
@@ -154,6 +176,21 @@ resource "aws_dynamodb_table" "events" {
   attribute {
     name = "timestamp"
     type = "N"
+  }
+}
+
+resource "aws_dynamodb_table" "ids" {
+  name             = "Stories.IDs"
+  read_capacity    = 10
+  write_capacity   = 10
+  stream_enabled   = true
+  stream_view_type = "NEW_IMAGE"
+
+  hash_key = "type"
+
+  attribute {
+    name = "type"
+    type = "S"
   }
 }
 
@@ -228,6 +265,12 @@ resource "aws_iam_user_policy" "user-stories-organization-referenced-content-dyn
   policy = "${data.aws_iam_policy_document.organization-referenced-content-dynamodb.json}"
 }
 
+resource "aws_iam_user_policy" "user-stories-ids-dynamodb" {
+  name   = "user-stories-ids-dynamodb"
+  user   = "${aws_iam_user.stories.name}"
+  policy = "${data.aws_iam_policy_document.ids-dynamodb.json}"
+}
+
 resource "aws_iam_user_policy" "user-stories-events-dynamodb" {
   name   = "user-stories-events-dynamodb"
   user   = "${aws_iam_user.stories.name}"
@@ -248,6 +291,10 @@ output "AWS_SQS_EVENTS_URL" {
 
 output "AWS_DYNAMODB_EVENTS_TABLE" {
   value = "${aws_dynamodb_table.events.id}"
+}
+
+output "AWS_DYNAMODB_IDS_TABLE" {
+  value = "${aws_dynamodb_table.ids.id}"
 }
 
 output "AWS_DYNAMODB_ORGANIZATION_REFERENCED_CONTENT_TABLE" {
