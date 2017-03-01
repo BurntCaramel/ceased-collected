@@ -136,11 +136,11 @@ data "aws_iam_policy_document" "ids-dynamodb" {
   }
 }
 
-data "aws_iam_policy_document" "organization-referenced-content-dynamodb" {
+data "aws_iam_policy_document" "items-dynamodb" {
   statement {
     resources = [
-      "${aws_dynamodb_table.organization-referenced-content.arn}",
-      "${aws_dynamodb_table.organization-referenced-content.arn}/*",
+      "${aws_dynamodb_table.items.arn}",
+      "${aws_dynamodb_table.items.arn}/*",
     ]
 
     actions = [
@@ -194,23 +194,23 @@ resource "aws_dynamodb_table" "ids" {
   }
 }
 
-resource "aws_dynamodb_table" "organization-referenced-content" {
-  name             = "Organization.ReferencedContent"
+resource "aws_dynamodb_table" "items" {
+  name             = "Organization.Items"
   read_capacity    = 1
   write_capacity   = 1
   stream_enabled   = true
   stream_view_type = "NEW_AND_OLD_IMAGES"
 
-  hash_key  = "organization"
-  range_key = "uuid"
+  hash_key  = "ownerID"
+  range_key = "id"
 
   attribute {
-    name = "organization"
+    name = "ownerID"
     type = "S"
   }
 
   attribute {
-    name = "uuid"
+    name = "id"
     type = "S"
   }
 
@@ -259,10 +259,10 @@ resource "aws_iam_user_policy" "stories" {
 EOF
 }
 
-resource "aws_iam_user_policy" "user-stories-organization-referenced-content-dynamodb" {
-  name   = "user-stories-organization-referenced-content-dynamodb"
+resource "aws_iam_user_policy" "user-stories-items-dynamodb" {
+  name   = "user-stories-itens-dynamodb"
   user   = "${aws_iam_user.stories.name}"
-  policy = "${data.aws_iam_policy_document.organization-referenced-content-dynamodb.json}"
+  policy = "${data.aws_iam_policy_document.items-dynamodb.json}"
 }
 
 resource "aws_iam_user_policy" "user-stories-ids-dynamodb" {
@@ -297,6 +297,6 @@ output "AWS_DYNAMODB_IDS_TABLE" {
   value = "${aws_dynamodb_table.ids.id}"
 }
 
-output "AWS_DYNAMODB_ORGANIZATION_REFERENCED_CONTENT_TABLE" {
-  value = "${aws_dynamodb_table.organization-referenced-content.id}"
+output "AWS_DYNAMODB_ITEMS_TABLE" {
+  value = "${aws_dynamodb_table.items.id}"
 }

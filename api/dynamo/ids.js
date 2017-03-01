@@ -35,7 +35,7 @@ function incrementIDForType(type) {
 	return runNode(idsDyno.updateItem, {
 		TableName: idsTable,
 		Key: { type },
-		UpdateExpression: 'set #counter = #counter + :change',
+		UpdateExpression: 'add #counter :change',
 		ExpressionAttributeNames: {
 			'#counter': 'counter'
 		},
