@@ -13,6 +13,7 @@ const sqsMessageGroupID = 'events.in'
 const sqsURL = process.env.AWS_SQS_EVENTS_URL
 
 const state = observable({
+	active: false,
 	successCount: 0,
 	errorCount: 0
 	//errors: observable.shallowArray([])
@@ -32,11 +33,12 @@ const deleteReceivedMessages = data => (
 const processReceivedMessages = data => {
   console.log('processReceivedMessages', data)
   if (data.Messages) {
-    const events = data.Messages.map(message => {
+    const events = data.Messages.map((message, index) => {
       const timestamp = parseFloat(message.Attributes.SentTimestamp)
       const event = JSON.parse(message.Body)
-      console.log('event received', event, timestamp)
-      return Object.assign({}, event, { timestamp })
+			const adjustedTimestamp = (timestamp * 100) + index
+      console.log('event received', event, timestamp, adjustedTimestamp)
+      return Object.assign({}, event, { timestamp: adjustedTimestamp })
     })
 
     const deleteEntries = data.Messages.map((message, index) => ({
@@ -69,10 +71,15 @@ const processReceivedError = action(error => {
 
 reaction(
 	() => ({
+		active: state.active,
 		successCount: state.successCount,
 		errorCount: state.errorCount
 	}),
-	() => {
+	({ active }) => {
+		if (!active) {
+			return
+		}
+		
     console.log('start receiveMessage')
 		eventsSQS.receiveMessage({
       QueueUrl: sqsURL,
