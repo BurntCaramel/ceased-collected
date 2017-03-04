@@ -20,7 +20,7 @@ const routes = {
 					_: ({ organizationID }) => (
 						<div>
 							<OrganizationNav organizationID={ organizationID } />
-							<Stories />
+							<Stories owner={{ type: 'organization', id: organizationID }} />
 						</div>
 					),
 				}

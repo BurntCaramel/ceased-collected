@@ -1,24 +1,24 @@
 import api, { fetchJSON, postJSON, patchJSON } from './init'
 
-export function listWithType({ type }) {
-  return fetchJSON(`/@organization/1/items/type:${type}`)
+export function listWithType({ owner, type }) {
+  return fetchJSON(`/@${owner.type}/${owner.id}/items/type:${type}`)
 }
 
-export function createItem({ type, contentJSON, name }) {
-  return postJSON(`/@organization/1/items/type:${type}`, {
+export function createItem({ owner, type, contentJSON, name }) {
+  return postJSON(`/@${owner.type}/${owner.id}/items/type:${type}`, {
 		contentJSON,
 		name
 	})
 }
 
-export function updateItem({ type, id, contentJSON, name, previewDestination }) {
-  return patchJSON(`/@organization/1/items/type:${type}/${id}`, {
+export function updateItem({ owner, type, id, contentJSON, name, previewDestination }) {
+  return patchJSON(`/@${owner.type}/${owner.id}/items/type:${type}/${id}`, {
 		contentJSON,
 		name,
 		previewDestination
 	})
 }
 
-export function deleteItem({ type, id }) {
-  return api.delete(`/@organization/1/items/type:${type}/${id}`)
+export function deleteItem({ owner, type, id }) {
+  return api.delete(`/@${owner.type}/${owner.id}/items/type:${type}/${id}`)
 }
