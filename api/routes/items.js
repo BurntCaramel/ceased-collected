@@ -17,43 +17,17 @@ const itemValidator = Joi.object({
 	contentJSON: Joi.object().required()
 })
 
-const resourcesMap = new Map([
-	['organizations', {
-		type: 'organization'
-	}],
-	['stories', {
-		type: itemTypes.story
-	}],
-	['screens', {
-		type: itemTypes.screen
-	}],
-	['messages', {
-		type: itemTypes.message
-	}]
-])
-
-const promiseInfoForResources = (resources) => {
-	const resourcesInfo = resourcesMap.get(resources)
-	if (!resourcesInfo) {
-		return reject(Boom.notFound(`Invalid resources: ${resources}`))
-	}
-	return resolve(resourcesInfo)
-}
-
 const handlers = {
 	owner({
 		params: {
-			ownerResources,
+			ownerType,
 			ownerID
 		}
 	}, reply) {
-		reply(
-			promiseInfoForResources(ownerResources)
-			.then(({ type }) => ({
-				type,
-				id: ownerID
-			}))
-		)
+		reply({
+			type: ownerType,
+			id: ownerID
+		})
 	},
 	authorizedForOwner({
 		pre: { owner }
@@ -69,12 +43,10 @@ const handlers = {
 			readAllItemsForOwner({ owner })
 		)
 	},
-	typeForResources({
-		params: { resources }
+	itemType({
+		params: { itemType }
 	}, reply) {
-		reply(
-			promiseInfoForResources(resources).map(R.prop('type'))
-		)
+		reply(itemType)
 	},
 	itemsForType({
 		pre: { owner, type }
@@ -94,17 +66,17 @@ const handlers = {
 				reply(item)
 			}
 			else {
-				reply().code(404)
+				throw Boom.notFound(`No item with type '${type}' and id '${id}' found`)
 			}
 		})
 		.catch(reply)
 	}
 }
 
-const ownerPathPrefix = (rest) => `/@{ownerResources}/{ownerID}${rest}`
+const ownerPathPrefix = (rest) => `/@{ownerType}/{ownerID}${rest}`
 
 const ownerValidator= Joi.object({
-	ownerResources: Joi.string().required(),
+	ownerType: Joi.string().required(),
 	ownerID: Joi.string().required()
 })
 
@@ -124,7 +96,7 @@ module.exports = [
 	},
 	{
 		method: 'GET',
-		path: ownerPathPrefix('/items/{resources}'),
+		path: ownerPathPrefix('/items/type:{itemType}'),
 		config: {
 			pre: [
 				[
@@ -134,7 +106,7 @@ module.exports = [
 					},
 					{
 						assign: 'type',
-						method: handlers.typeForResources
+						method: handlers.itemType
 					}
 				]
 			],
@@ -143,7 +115,7 @@ module.exports = [
 	},
 	{
 		method: 'GET',
-		path: ownerPathPrefix('/items/{resources}/{id}'),
+		path: ownerPathPrefix('/items/type:{itemType}/{id}'),
 		config: {
 			pre: [
 				[
@@ -153,7 +125,7 @@ module.exports = [
 					},
 					{
 						assign: 'type',
-						method: handlers.typeForResources
+						method: handlers.itemType
 					}
 				]
 			],
@@ -162,7 +134,7 @@ module.exports = [
 	},
 	{
 		method: 'POST',
-		path: ownerPathPrefix('/items/{resources}'),
+		path: ownerPathPrefix('/items/type:{itemType}'),
 		config: {
 			payload: {
 				output: 'data'
@@ -181,13 +153,13 @@ module.exports = [
 					},
 					{
 						assign: 'type',
-						method: handlers.typeForResources
+						method: handlers.itemType
 					}
 				]
 			]
 		},
 		handler({
-			params: { ownerResources, ownerID },
+			params: { ownerType, ownerID },
 			pre: { owner, type },
 			payload: { tags, contentJSON }
 		}, reply) {
@@ -195,14 +167,14 @@ module.exports = [
 			.then(({ id, type }) => {
 				reply({ id, type })
 				.code(201) // 201 Created
-				.location(`/@${ownerResources}/${ownerID}/items/${type}/${id}`)
+				.location(`/@${ownerType}/${ownerID}/items/${type}/${id}`)
 			})
 			.catch(reply)
 		}
 	},
 	{
 		method: 'PUT',
-		path: ownerPathPrefix('/items/{resources}/{id}/tags'),
+		path: ownerPathPrefix('/items/type:{itemType}/{id}/tags'),
 		config: {
 			payload: {
 				output: 'data'
@@ -220,7 +192,7 @@ module.exports = [
 					},
 					{
 						assign: 'type',
-						method: handlers.typeForResources
+						method: handlers.itemType
 					}
 				]
 			]
@@ -237,7 +209,7 @@ module.exports = [
 	},
 	{
 		method: 'PATCH',
-		path: ownerPathPrefix('/items/{resources}/{id}'),
+		path: ownerPathPrefix('/items/type:{itemType}/{id}'),
 		config: {
 			payload: {
 				output: 'data'
@@ -255,7 +227,7 @@ module.exports = [
 					},
 					{
 						assign: 'type',
-						method: handlers.typeForResources
+						method: handlers.itemType
 					}
 				]
 			]

@@ -1,7 +1,11 @@
-import { patchJSON } from './init'
+import { fetchJSON, patchJSON } from './init'
 
-export function updateContentForItem({ resources = 'stories', id, contentJSON }) {
-  return patchJSON(`/@organizations/1/items/${resources}/${id}`, {
+export function listWithType({ type }) {
+  return fetchJSON(`/@organization/1/items/type:${type}`)
+}
+
+export function updateContentForItem({ type, id, contentJSON }) {
+  return patchJSON(`/@organization/1/items/type:${type}/${id}`, {
 		contentJSON
 	})
 }

@@ -12,14 +12,14 @@ export default class Stories extends React.PureComponent {
 	onSaveStory = (contentJSON, id) => {
 		this.setState({ saving: true })
 
-		itemsAPI.updateContentForItem({ id, contentJSON })
+		itemsAPI.updateContentForItem({ type: 'story', id, contentJSON })
 		.then(() => {
 			this.setState({ saving: false })
 		})
 	}
 
 	componentDidMount() {
-		storiesAPI.list()
+		itemsAPI.listWithType({ type: 'story '})
 		.then(stories => {
 			this.setState({ stories })
 		})
