@@ -5,11 +5,10 @@ import Cookie from 'cookie'
 import decodeJWT from 'jwt-decode'
 import * as storiesAPI from './api/stories'
 import * as eventsAPI from './api/events'
-import GoogleAnalyticsSnippet from './components/GoogleAnalyticsSnippet'
 import StoryEditor from './components/StoryEditor'
 import EventList from './components/EventList'
 import makeLoadable from './components/makeLoadable'
-import router from './containers/router'
+import Routes from './containers/Routes'
 import './App.css'
 
 const eventListRenderers = [
@@ -17,10 +16,6 @@ const eventListRenderers = [
 	error => `Error loading events: ${ error.message }`,
 	started => started ? 'Loading events…' : null
 ]
-
-const Routes = observer(function Routes(props) {
-	return router.render(props)
-})
 
 function readAuthToken() {
 	const cookies = Cookie.parse(document.cookie)
@@ -94,6 +89,17 @@ class App extends Component {
 
 	componentDidMount() {
 		this.events.start()
+
+		// Google Analytics
+		const googleAnalyticsTrackingID = 'UA-12168665-5';
+
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		window.ga('create', googleAnalyticsTrackingID, 'auto');
+		window.ga('send', 'pageview');
 	}
 
 	render() {
@@ -107,7 +113,6 @@ class App extends Component {
 				<Routes
 					onSaveStory={ this.saveNewStory.start }
 				/>
-				<GoogleAnalyticsSnippet />
 			</main>
 		);
 	}
