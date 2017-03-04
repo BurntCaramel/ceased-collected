@@ -23,22 +23,29 @@ const types = {
 
 const itemsTable = process.env.AWS_DYNAMODB_ITEMS_TABLE
 
-const uniqueIDForTypeAndID = (type, id) => `${type}-${id}`
+const uniqueIDForTypeAndID = (type, id) => `${type}:${id}`
 const uniqueIDForOwner = (owner) => uniqueIDForTypeAndID(owner.type, owner.id)
 
 const formatID = R.pipe(
-	R.split('-'),
+	R.split(':'),
 	R.last
 )
-const formatItem = (item) => Object.assign({},
-	item,
-	{
-		id: formatID(item.id)
-	},
-	item.contentJSON && {
-		contentJSON: R.is(String, item.contentJSON) ? JSON.parse(item.contentJSON) : item.contentJSON
-	}
+const formatReference = R.pipe(
+	R.split(':'),
+	R.zipObj(['type', 'id'])
 )
+const formatItem = R.converge(Object.assign, [
+	R.omit(['ownerID']),
+	({ id }) => ({
+		id: formatID(id)
+	}),
+	({ ownerID }) => ownerID ? ({
+		owner: formatReference(ownerID)
+	}) : null,
+	({ contentJSON }) => contentJSON ? ({
+		contentJSON: R.is(String, contentJSON) ? JSON.parse(contentJSON) : contentJSON
+	}) : null
+])
 
 const itemsDyno = Dyno({
 	table: itemsTable,
@@ -81,17 +88,17 @@ function readAllItemsForType({ owner, type }) {
 		},
 		ExpressionAttributeValues: {
 			':ownerID': uniqueIDForOwner(owner),
-			':type': type
+			':type': `${type}:`
 		},
 		ScanIndexForward: false,
 		Pages: 1
 	})
+	.map(R.prop('Items'))
+	.map(items => items.map(formatItem))
 	.catch(error => {
 		console.error(error)
 		throw error
 	})
-	.map(R.prop('Items'))
-	.map(items => items.map(formatItem))
 }
 
 function readItem({ owner, type, id }) {
