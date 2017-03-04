@@ -9,3 +9,4 @@ export default api
 
 export const fetchJSON = (...args) => api.get(...args).then(R.prop('data'))
 export const postJSON = (...args) => api.post(...args).then(R.prop('data'))
+export const patchJSON = (...args) => api.patch(...args).then(R.prop('data'))

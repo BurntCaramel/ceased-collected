@@ -3,16 +3,24 @@ import Gateau from 'gateau/lib/Main'
 import createStateManager from 'gateau/lib/createStateManager'
 import * as storiesAPI from '../api/stories'
 
+function createStateManagerWithProps({ initialJSON }) {
+	const manager = createStateManager()
+	if (initialJSON) {
+		manager.json = initialJSON
+	}
+	return manager
+}
+
 export default class StoryEditor extends React.Component {
 	state = {
-		loaded: this.props.hmac == null, // Only loaded if new story
+		loaded: this.props.hmac == null || this.props.json != null, // Only loaded if new story
 		error: null
 	}
 
-	gateauStateManager = createStateManager()
+	gateauStateManager = createStateManagerWithProps(this.props)
 
 	onSave = (event) => {
-		this.props.onSaveStory(this.gateauStateManager.json)
+		this.props.onSaveStory(this.gateauStateManager.json, this.props.id)
 	}
 
 	componentDidMount() {
@@ -34,7 +42,7 @@ export default class StoryEditor extends React.Component {
 	}
 
 	render() {
-		const { title, hmac, onSaveStory } = this.props
+		const { title, hmac, previewOnly = false, saving = false, onSaveStory } = this.props
 		const { loaded, error } = this.state
 
 		return (
@@ -47,11 +55,12 @@ export default class StoryEditor extends React.Component {
 							<section>
 								{ onSaveStory &&
 									<button onClick={ this.onSave }>
-										Save story
+										{ saving ? 'Saving…' : 'Save story' }
 									</button>
 								}
 								<Gateau
 									stateManager={ this.gateauStateManager }
+									previewOnly={ previewOnly }
 									backgroundColor='transparent'
 								/>
 							</section>

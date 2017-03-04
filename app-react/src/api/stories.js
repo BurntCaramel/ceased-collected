@@ -1,8 +1,15 @@
 import { fetchJSON, postJSON } from './init'
 
 
+// export function list() {
+//   return fetchJSON('/stories')
+// }
 export function list() {
-  return fetchJSON('/stories')
+  return fetchJSON('/@organizations/1/items/stories')
+}
+
+export function readWithID(id) {
+  return fetchJSON(`/@organizations/1/items/stories/${id}`)
 }
 
 export function readWithHMAC(hmac) {
