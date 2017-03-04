@@ -1,6 +1,7 @@
 const Dyno = require('dyno')
 const R = require('ramda')
 const { fromNode, runNode } = require('creed')
+const dynamodbUpdateExpression = require('dynamodb-update-expression');
 const {
 	convertItemsToPutRequests,
 	readAllFrom
@@ -10,6 +11,7 @@ const {
 } = require('./ids')
 
 const types = {
+	collection: 'collection',
 	record: 'record',
 	picture: 'picture',
 	story: 'story',
@@ -34,7 +36,7 @@ const formatItem = (item) => Object.assign({},
 		id: formatID(item.id)
 	},
 	item.contentJSON && {
-		contentJSON: JSON.parse(item.contentJSON)
+		contentJSON: R.is(String, item.contentJSON) ? JSON.parse(item.contentJSON) : item.contentJSON
 	}
 )
 
@@ -150,22 +152,28 @@ function updateTagsForItem({ owner, type, id, newTags }) {
 	.map(R.prop('Attributes'))
 }
 
-function updateContentForItem({ owner, type, id, contentJSON }) {
-	return updateItem({
+function updateItemWithChanges({ owner, type, id, changes }) {
+	const updateField = dynamodbUpdateExpression.getUpdateExpression({}, changes)
+
+	console.log('updateField', updateField)
+
+	return updateItem(Object.assign({
 		TableName: itemsTable,
 		Key: {
 			ownerID: uniqueIDForOwner(owner),
 			id: uniqueIDForTypeAndID(type, id)
 		},
-		UpdateExpression: 'SET #contentJSON = :contentJSON',
-		ExpressionAttributeNames: {
-			'#contentJSON': 'contentJSON'
-		},
-		ExpressionAttributeValues: {
-			':contentJSON': JSON.stringify(contentJSON)
-		},
 		ReturnValues: 'ALL_NEW'
-	})
+	}, updateField
+
+		// UpdateExpression: 'SET #contentJSON = :contentJSON',
+		// ExpressionAttributeNames: {
+		// 	'#contentJSON': 'contentJSON'
+		// },
+		// ExpressionAttributeValues: {
+		// 	':contentJSON': JSON.stringify(contentJSON)
+		// },
+	))
 	.map(R.prop('Attributes'))
 }
 
@@ -197,5 +205,5 @@ module.exports = {
 	//writeItems,
 	createItem,
 	updateTagsForItem,
-	updateContentForItem
+	updateItemWithChanges
 }

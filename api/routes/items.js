@@ -9,7 +9,7 @@ const {
 	readItem,
 	createItem,
 	updateTagsForItem,
-	updateContentForItem
+	updateItemWithChanges
 } = require('../dynamo/items')
 
 const itemValidator = Joi.object({
@@ -28,6 +28,18 @@ const handlers = {
 			type: ownerType,
 			id: ownerID
 		})
+	},
+	ensureOwnerExists({
+		pre: { owner, user }
+	}, reply) {
+		reply(
+			readItem({ owner: user, type: owner.type, id: owner.id })
+			.then(ownerItem => {
+				if (!ownerItem) {
+					throw Boom.unauthorized(`Not authorized for item: ${owner.type} ${owner.id}`)
+				}
+			})
+		)
 	},
 	authorizedForOwner({
 		pre: { owner }
@@ -141,7 +153,7 @@ module.exports = [
 			},
 			validate: {
 				params: ownerValidator.keys({
-					resources: Joi.string().required()
+					itemType: Joi.string().required()
 				}),
 				payload: itemValidator
 			},
@@ -173,41 +185,6 @@ module.exports = [
 		}
 	},
 	{
-		method: 'PUT',
-		path: ownerPathPrefix('/items/type:{itemType}/{id}/tags'),
-		config: {
-			payload: {
-				output: 'data'
-			},
-			validate: {
-				payload: Joi.object({
-					tags: Joi.array().items(Joi.string()),
-				})
-			},
-			pre: [
-				[
-					{
-						assign: 'owner',
-						method: handlers.owner
-					},
-					{
-						assign: 'type',
-						method: handlers.itemType
-					}
-				]
-			]
-		},
-		handler({
-			pre: { owner, type },
-			params: { id },
-			payload: { tags }
-		}, reply) {
-			reply(
-				updateTagsForItem({ owner, type, id, newTags: tags })
-			)
-		}
-	},
-	{
 		method: 'PATCH',
 		path: ownerPathPrefix('/items/type:{itemType}/{id}'),
 		config: {
@@ -216,7 +193,15 @@ module.exports = [
 			},
 			validate: {
 				payload: Joi.object({
-					contentJSON: Joi.object().optional()
+					version: Joi.number().integer().positive().only(1),
+					contentJSON: Joi.object().optional(),
+					name: Joi.string().optional(),
+					rawTags: Joi.string().optional(),
+					tags: Joi.array().items(Joi.string()).optional(),
+					previewDestination: Joi.object({
+						device: Joi.string(),
+						framework: Joi.string()
+					}).optional()
 				})
 			},
 			pre: [
@@ -235,10 +220,10 @@ module.exports = [
 		handler({
 			pre: { owner, type },
 			params: { id },
-			payload: { contentJSON }
+			payload
 		}, reply) {
 			reply(
-				updateContentForItem({ owner, type, id, contentJSON })
+				updateItemWithChanges({ owner, type, id, changes: payload })
 			)
 		}
 	}
