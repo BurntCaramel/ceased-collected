@@ -5,13 +5,35 @@ import LandingPage from './LandingPage'
 import Stories from './Stories'
 import EditStory from './EditStory'
 import PreviewStory from './PreviewStory'
+import OrganizationNav from '../components/OrganizationNav'
 
 const routes = {
-	root: () => (
-		<LandingPage />
-	),
+	_: [
+		{
+			assign: 'organizationID',
+			method: (pathComponent) => pathComponent[0] === '@' ? pathComponent.substring(1) : null,
+			routes: {
+				_: ({ organizationID }) => (
+					<OrganizationNav organizationID={ organizationID } />
+				),
+				'stories': {
+					_: ({ organizationID }) => (
+						<div>
+							<OrganizationNav organizationID={ organizationID } />
+							<Stories />
+						</div>
+					),
+				}
+			}
+		},
+		{
+			routes: () => (
+				<LandingPage />
+			)
+		}
+	],
 	'stories': {
-		root: () => (
+		_: () => (
 			<Stories />
 		),
 		'new': ({ onSaveStory }) => (
@@ -36,26 +58,59 @@ const routes = {
 }
 
 function Routes(props) {
-	const pathComponents = location.pathname.split('/').slice(1)
-	const { routes: renderer, rest } = pathComponents.reduce(({ routes, rest }, pathComponent) => {
-		if (routes.call) {
-			return { routes, rest: rest.concat(pathComponent) }
+	let propsCopy = Object.assign({}, props)
+
+	const pathComponents = location.pathname.split('/').slice(1).concat('') // Split /, removing leading /
+	let { routes: renderer, rest } = pathComponents.reduce(({ routes, rest }, pathComponent) => {
+		let usedComponent = false
+
+		console.log('pathComponent', pathComponent, routes)
+
+		if (routes) {
+			if (pathComponent != '' && routes[pathComponent]) {
+				routes = routes[pathComponent]
+				usedComponent = true
+			}
+			else {
+				if (routes._) {
+					routes = routes._
+				}
+
+				if (Array.isArray(routes)) {
+					let newRoutes
+					routes.some(childRoute => {
+						const extraction = childRoute.method ? childRoute.method(pathComponent) : true
+						console.log('route matches', extraction)
+						if (extraction) {
+							if (childRoute.assign) {
+								propsCopy[childRoute.assign] = extraction
+							}
+							newRoutes = childRoute.routes
+							return true
+						}
+						return false
+					})
+
+					routes = newRoutes
+				}
+			}
 		}
-		else if (routes[pathComponent]) {
-			return { routes: routes[pathComponent], rest }
+
+		if (!usedComponent) {
+			rest = rest.concat(pathComponent)
 		}
-		else {
-			return { routes, rest: rest.concat(pathComponent) }
-		}
+
+		return { routes, rest }
 	}, { routes, rest: [] })
 
 	console.log('renderer', renderer, location.pathname)
 
-	if (renderer.call) {
-		return renderer(props, rest)
+	if (!!renderer && renderer._) {
+		renderer = renderer._
 	}
-	else if (renderer.root) {
-		return renderer.root(props, rest)
+
+	if (!!renderer && renderer.call) {
+		return renderer(propsCopy, rest)
 	}
 	else {
 		return <noscript />

@@ -3,10 +3,14 @@ import Gateau from 'gateau/lib/Main'
 import createStateManager from 'gateau/lib/createStateManager'
 import * as storiesAPI from '../api/stories'
 
-function createStateManagerWithProps({ initialJSON }) {
+function createStateManagerWithProps({ initialJSON, initialPreviewDestination }) {
 	const manager = createStateManager()
 	if (initialJSON) {
 		manager.json = initialJSON
+	}
+	if (initialPreviewDestination) {
+		manager.destinationDevice = initialPreviewDestination.device
+		manager.destinationID = initialPreviewDestination.framework
 	}
 	return manager
 }
@@ -20,7 +24,19 @@ export default class StoryEditor extends React.Component {
 	gateauStateManager = createStateManagerWithProps(this.props)
 
 	onSave = (event) => {
-		this.props.onSaveStory(this.gateauStateManager.json, this.props.id)
+		const stateManager = this.gateauStateManager
+		this.props.onSaveStory({
+			contentJSON: stateManager.json,
+			name: this.props.name,
+			previewDestination: {
+				device: stateManager.destinationDevice,
+				framework: stateManager.destinationID
+			}
+		}, this.props.id)
+	}
+
+	onChangeName = (event) => {
+		this.props.onEditName(event.target.value, this.props.id)
 	}
 
 	componentDidMount() {
@@ -42,7 +58,10 @@ export default class StoryEditor extends React.Component {
 	}
 
 	render() {
-		const { title, hmac, previewOnly = false, saving = false, onSaveStory } = this.props
+		const {
+			name, previewOnly = false, saving = false,
+			onSaveStory, onEditName
+		} = this.props
 		const { loaded, error } = this.state
 
 		return (
@@ -53,6 +72,9 @@ export default class StoryEditor extends React.Component {
 							<p>{ error.message }</p>
 						) : (
 							<section>
+								{ onEditName &&
+									<input value={ name } onChange={ this.onChangeName } />
+								}
 								{ onSaveStory &&
 									<button onClick={ this.onSave }>
 										{ saving ? 'Saving…' : 'Save story' }

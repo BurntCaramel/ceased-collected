@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { addHandlers } from 'react-ramda'
-import { observer } from 'mobx-react'
 import Cookie from 'cookie'
 import decodeJWT from 'jwt-decode'
 import * as storiesAPI from './api/stories'

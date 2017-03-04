@@ -16,8 +16,8 @@ export function readWithHMAC(hmac) {
   return fetchJSON(`/stories/256/${hmac}`)
 }
 
-export function create(storyJSON) {
-  return postJSON(`/stories`, storyJSON)
+export function create({ contentJSON }) {
+  return postJSON(`/stories`, contentJSON)
 }
 
 export function readInOrganization({ uuid, organizationID, authToken }) {

@@ -1,4 +1,3 @@
-import R from 'ramda'
 import axios from 'axios'
 
 const api = axios.create({
@@ -7,6 +6,8 @@ const api = axios.create({
 
 export default api
 
-export const fetchJSON = (...args) => api.get(...args).then(R.prop('data'))
-export const postJSON = (...args) => api.post(...args).then(R.prop('data'))
-export const patchJSON = (...args) => api.patch(...args).then(R.prop('data'))
+const extractData = (result) => result.data
+
+export const fetchJSON = (...args) => api.get(...args).then(extractData)
+export const postJSON = (...args) => api.post(...args).then(extractData)
+export const patchJSON = (...args) => api.patch(...args).then(extractData)

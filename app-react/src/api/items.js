@@ -4,8 +4,10 @@ export function listWithType({ type }) {
   return fetchJSON(`/@organization/1/items/type:${type}`)
 }
 
-export function updateContentForItem({ type, id, contentJSON }) {
+export function updateContentForItem({ type, id, contentJSON, name, previewDestination }) {
   return patchJSON(`/@organization/1/items/type:${type}/${id}`, {
-		contentJSON
+		contentJSON,
+		name,
+		previewDestination
 	})
 }
