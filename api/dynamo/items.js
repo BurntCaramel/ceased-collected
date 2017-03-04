@@ -50,6 +50,7 @@ const query = fromNode(itemsDyno.query.bind(itemsDyno))
 const getItem = fromNode(itemsDyno.getItem.bind(itemsDyno))
 const putItem = fromNode(itemsDyno.putItem.bind(itemsDyno))
 const updateItem = fromNode(itemsDyno.updateItem.bind(itemsDyno))
+const deleteItemRaw = fromNode(itemsDyno.deleteItem.bind(itemsDyno))
 
 //const writeStream = itemsDyno.putStream()
 
@@ -69,16 +70,25 @@ function readAllItemsForOwner({ owner }) {
 function readAllItemsForType({ owner, type }) {
 	return query({
 		TableName: itemsTable,
-		IndexName: 'Type',
-		KeyConditionExpression: 'ownerID = :ownerID and #type = :type',
+		// IndexName: 'Type',
+		// KeyConditionExpression: 'ownerID = :ownerID and #type = :type',
+		// ExpressionAttributeNames: {
+		// 	'#type': 'type'
+		// },
+		KeyConditionExpression: 'ownerID = :ownerID and begins_with(#id, :type)',
 		ExpressionAttributeNames: {
-			'#type': 'type'
+			'#id': 'id'
 		},
 		ExpressionAttributeValues: {
 			':ownerID': uniqueIDForOwner(owner),
 			':type': type
 		},
+		ScanIndexForward: false,
 		Pages: 1
+	})
+	.catch(error => {
+		console.error(error)
+		throw error
 	})
 	.map(R.prop('Items'))
 	.map(items => items.map(formatItem))
@@ -177,6 +187,16 @@ function updateItemWithChanges({ owner, type, id, changes }) {
 	.map(R.prop('Attributes'))
 }
 
+function deleteItem({ owner, type, id }) {
+	return deleteItemRaw({
+		TableName: itemsTable,
+		Key: {
+			ownerID: uniqueIDForOwner(owner),
+			id: uniqueIDForTypeAndID(type, id)
+		}
+	})
+}
+
 // function writeItems(documents) {
 // 	return new Promise((resolve, reject) => {
 // 		itemsDyno.batchWriteAll({
@@ -204,6 +224,6 @@ module.exports = {
 	readItem,
 	//writeItems,
 	createItem,
-	updateTagsForItem,
-	updateItemWithChanges
+	updateItemWithChanges,
+	deleteItem
 }

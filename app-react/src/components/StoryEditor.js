@@ -35,6 +35,10 @@ export default class StoryEditor extends React.Component {
 		}, this.props.id)
 	}
 
+	onDelete = (event) => {
+		this.props.onDelete(this.props.id)
+	}
+
 	onChangeName = (event) => {
 		this.props.onEditName(event.target.value, this.props.id)
 	}
@@ -60,7 +64,7 @@ export default class StoryEditor extends React.Component {
 	render() {
 		const {
 			name, previewOnly = false, saving = false,
-			onSaveStory, onEditName
+			onSaveStory, onDelete, onEditName
 		} = this.props
 		const { loaded, error } = this.state
 
@@ -78,6 +82,11 @@ export default class StoryEditor extends React.Component {
 								{ onSaveStory &&
 									<button onClick={ this.onSave }>
 										{ saving ? 'Saving…' : 'Save story' }
+									</button>
+								}
+								{ onDelete &&
+									<button onClick={ this.onDelete }>
+										{ 'Delete' }
 									</button>
 								}
 								<Gateau

@@ -13,7 +13,7 @@ const storyObservableTemplate = {
 	onSaveStory: action.bound(function({ contentJSON, name, previewDestination }, id) {
 		this.saving = true
 
-		itemsAPI.updateContentForItem({
+		itemsAPI.updateItem({
 			type: 'story',
 			id,
 			contentJSON,
@@ -39,7 +39,7 @@ const Story = observer(class Story extends React.Component {
 	}
 
 	render() {
-		const { id } = this.props
+		const { id, onDelete } = this.props
 		const { stateManager } = this
 		console.log('render', stateManager.saving)
 		return (
@@ -50,6 +50,7 @@ const Story = observer(class Story extends React.Component {
 				name={ stateManager.name }
 				onSaveStory={ stateManager.onSaveStory }
 				onEditName={ stateManager.onEditName }
+				onDelete={ onDelete }
 				saving={ stateManager.saving }
 			/>
 		)
@@ -58,28 +59,37 @@ const Story = observer(class Story extends React.Component {
 
 export default class Stories extends React.PureComponent {
 	state = {
-		stories: null,
-		saving: false
+		stories: null
 	}
+	
+	onNewStory = () => {
+		const newStory = {
+			contentJSON: { body: '' },
+			name: 'Untitled'
+		}
 
-	onSaveStory = (contentJSON, id) => {
-		this.setState({ saving: true })
-
-		itemsAPI.updateContentForItem({ type: 'story', id, contentJSON })
-		.then(() => {
-			this.setState({ saving: false })
+		itemsAPI.createItem({ type: 'story', ...newStory })
+		.then((story) => {
+			story = { ...story, ...newStory }
+			this.setState(({ stories }) => ({
+				stories: [story].concat(stories)
+			}))
 		})
 	}
 
-	onEditTags = (rawTags, id) => {
-
+	onDelete = (id) => {
+		itemsAPI.deleteItem({ type: 'story', id })
+		.then(() => {
+			this.setState(({ stories }) => ({
+				stories: stories.filter(story => story.id !== id)
+			}))
+		})
 	}
 
 	componentDidMount() {
 		itemsAPI.listWithType({ type: 'story '})
 		.then(stories => {
 			this.setState({ stories })
-			//this.setState({ storyObservables: stories.map(makeStoryState) })
 		})
 	}
 
@@ -88,6 +98,11 @@ export default class Stories extends React.PureComponent {
 		return (
 			<article>
 				<h1>Stories</h1>
+				<section>
+					<button onClick={ this.onNewStory }>
+						New story
+					</button>
+				</section>
 				{
 					stories ? (
 						stories.map((story, index) => (
@@ -96,8 +111,7 @@ export default class Stories extends React.PureComponent {
 								initialJSON={ story.contentJSON }
 								initialPreviewDestination={ story.previewDestination }
 								name={ story.name }
-								onSaveStory={ this.onSaveStory }
-								onEditTags={ this.onEditTags }
+								onDelete={ this.onDelete }
 							/>
 						))
 					) : (

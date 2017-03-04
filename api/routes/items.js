@@ -8,13 +8,14 @@ const {
 	readAllItemsForType,
 	readItem,
 	createItem,
-	updateTagsForItem,
-	updateItemWithChanges
+	updateItemWithChanges,
+	deleteItem
 } = require('../dynamo/items')
 
 const itemValidator = Joi.object({
+	contentJSON: Joi.object().required(),
+	name: Joi.string().optional(),
 	tags: Joi.array().items(Joi.string()).optional(),
-	contentJSON: Joi.object().required()
 })
 
 const handlers = {
@@ -173,9 +174,9 @@ module.exports = [
 		handler({
 			params: { ownerType, ownerID },
 			pre: { owner, type },
-			payload: { tags, contentJSON }
+			payload: { contentJSON, name, tags, }
 		}, reply) {
-			createItem({ owner, type, tags, contentJSON })
+			createItem({ owner, type, contentJSON, name, tags })
 			.then(({ id, type }) => {
 				reply({ id, type })
 				.code(201) // 201 Created
@@ -224,6 +225,32 @@ module.exports = [
 		}, reply) {
 			reply(
 				updateItemWithChanges({ owner, type, id, changes: payload })
+			)
+		}
+	},
+	{
+		method: 'DELETE',
+		path: ownerPathPrefix('/items/type:{itemType}/{id}'),
+		config: {
+			pre: [
+				[
+					{
+						assign: 'owner',
+						method: handlers.owner
+					},
+					{
+						assign: 'type',
+						method: handlers.itemType
+					}
+				]
+			]
+		},
+		handler({
+			pre: { owner, type },
+			params: { id }
+		}, reply) {
+			reply(
+				deleteItem({ owner, type, id })
 			)
 		}
 	}
