@@ -1,30 +1,47 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import location from 'mobx-location'
+import { createStoriesObservable } from '../managers/stories'
 import LandingPage from './LandingPage'
 import Stories from './Stories'
 import EditStory from './EditStory'
 import PreviewStory from './PreviewStory'
-import OrganizationNav from '../components/OrganizationNav'
+import OwnerNav from '../components/OwnerNav'
+
+const ownerRoutes = {
+	_: ({ storiesManager }, []) => (
+		<OwnerNav owner={ storiesManager.owner } />
+	),
+	'stories': ({ storiesManager }, []) => (
+		<div>
+			<OwnerNav owner={ storiesManager.owner } />
+			<Stories storiesManager={ storiesManager } owner={ storiesManager.owner } />
+		</div>
+	)
+}
 
 const routes = {
 	_: [
 		{
-			assign: 'organizationID',
-			method: (pathComponent) => pathComponent[0] === '@' ? pathComponent.substring(1) : null,
-			routes: {
-				_: ({ organizationID }) => (
-					<OrganizationNav organizationID={ organizationID } />
-				),
-				'stories': {
-					_: ({ organizationID }) => (
-						<div>
-							<OrganizationNav organizationID={ organizationID } />
-							<Stories owner={{ type: 'organization', id: organizationID }} />
-						</div>
-					),
+			assign: 'isCollection',
+			method: (pathComponent) => pathComponent === '@collection',
+			routes: [
+				{
+					assign: 'storiesManager',
+					method: (id) => createStoriesObservable({ owner: { type: 'collection', id } }),
+					routes: ownerRoutes
 				}
-			}
+			]
+		},
+		{
+			assign: 'storiesManager',
+			method: (pathComponent) => {
+				if (pathComponent[0] === '@') {
+					const id = pathComponent.substring(1)
+					return createStoriesObservable({ owner: { type: 'organization', id } })
+				}
+			},
+			routes: ownerRoutes
 		},
 		{
 			routes: () => (
@@ -33,9 +50,6 @@ const routes = {
 		}
 	],
 	'stories': {
-		_: () => (
-			<Stories />
-		),
 		'new': ({ onSaveStory }) => (
 			<EditStory
 				onSaveStory={ onSaveStory }
@@ -57,10 +71,15 @@ const routes = {
 	}
 }
 
-function Routes(props) {
+function NotFoundDefault({ path, renderer }) {
+	return <p>Page not found: { path } { JSON.stringify(renderer) }</p>
+}
+
+function Routes(props, { NotFound = NotFoundDefault } = {}) {
 	let propsCopy = Object.assign({}, props)
 
-	const pathComponents = location.pathname.split('/').slice(1).concat('') // Split /, removing leading /
+	const path = location.pathname
+	const pathComponents = path.split('/').slice(1).concat('') // Split /, removing leading /
 	let { routes: renderer, rest } = pathComponents.reduce(({ routes, rest }, pathComponent) => {
 		let usedComponent = false
 
@@ -68,6 +87,7 @@ function Routes(props) {
 
 		if (routes) {
 			if (pathComponent != '' && routes[pathComponent]) {
+				console.log('got route for', pathComponent)
 				routes = routes[pathComponent]
 				usedComponent = true
 			}
@@ -86,6 +106,7 @@ function Routes(props) {
 								propsCopy[childRoute.assign] = extraction
 							}
 							newRoutes = childRoute.routes
+							usedComponent = true
 							return true
 						}
 						return false
@@ -113,7 +134,7 @@ function Routes(props) {
 		return renderer(propsCopy, rest)
 	}
 	else {
-		return <noscript />
+		return <NotFound path={ path } renderer={ renderer } />
 	}
 }
 
