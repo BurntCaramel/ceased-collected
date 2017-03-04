@@ -1,7 +1,7 @@
 {
-  "name": "royal-stories-api",
+  "name": "royalty",
   "version": "0.1.0",
-  "description": "API for Royal Stories",
+  "description": "Royal Icing API server",
   "main": "routes/index.js",
   "author": "Patrick Smith",
   "license": "MIT",

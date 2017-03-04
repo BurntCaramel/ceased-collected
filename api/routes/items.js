@@ -9,6 +9,7 @@ const {
 	readItem,
 	createItem,
 	updateTagsForItem,
+	updateContentForItem
 } = require('../dynamo/items')
 
 const itemValidator = Joi.object({
@@ -231,6 +232,41 @@ module.exports = [
 		}, reply) {
 			reply(
 				updateTagsForItem({ owner, type, id, newTags: tags })
+			)
+		}
+	},
+	{
+		method: 'PATCH',
+		path: ownerPathPrefix('/items/{resources}/{id}'),
+		config: {
+			payload: {
+				output: 'data'
+			},
+			validate: {
+				payload: Joi.object({
+					contentJSON: Joi.object().optional()
+				})
+			},
+			pre: [
+				[
+					{
+						assign: 'owner',
+						method: handlers.owner
+					},
+					{
+						assign: 'type',
+						method: handlers.typeForResources
+					}
+				]
+			]
+		},
+		handler({
+			pre: { owner, type },
+			params: { id },
+			payload: { contentJSON }
+		}, reply) {
+			reply(
+				updateContentForItem({ owner, type, id, contentJSON })
 			)
 		}
 	}

@@ -24,6 +24,20 @@ const itemsTable = process.env.AWS_DYNAMODB_ITEMS_TABLE
 const uniqueIDForTypeAndID = (type, id) => `${type}-${id}`
 const uniqueIDForOwner = (owner) => uniqueIDForTypeAndID(owner.type, owner.id)
 
+const formatID = R.pipe(
+	R.split('-'),
+	R.last
+)
+const formatItem = (item) => Object.assign({},
+	item,
+	{
+		id: formatID(item.id)
+	},
+	item.contentJSON && {
+		contentJSON: JSON.parse(item.contentJSON)
+	}
+)
+
 const itemsDyno = Dyno({
 	table: itemsTable,
 	accessKeyId: process.env.AWS_STORIES_USER_ACCESS_KEY,
@@ -47,6 +61,7 @@ function readAllItemsForOwner({ owner }) {
 		Pages: 1
 	})
 	.map(R.prop('Items'))
+	.map(items => items.map(formatItem))
 }
 
 function readAllItemsForType({ owner, type }) {
@@ -64,6 +79,7 @@ function readAllItemsForType({ owner, type }) {
 		Pages: 1
 	})
 	.map(R.prop('Items'))
+	.map(items => items.map(formatItem))
 }
 
 function readItem({ owner, type, id }) {
@@ -75,9 +91,10 @@ function readItem({ owner, type, id }) {
 		}
 	})
 	.map(R.prop('Item'))
+	.map(formatItem)
 }
 
-function createItem({ owner, type, tags = [], contentJSON }) {
+function createItem({ owner, type, tags = [], name = 'Untitled', contentJSON }) {
 	return incrementIDForType(type)
 	.then(({ counter: id }) => {
 		return putItem({
@@ -87,6 +104,7 @@ function createItem({ owner, type, tags = [], contentJSON }) {
 				id: uniqueIDForTypeAndID(type, id),
 				type,
 				tags,
+				name,
 				contentJSON: JSON.stringify(contentJSON)
 			}
 		})
@@ -132,6 +150,25 @@ function updateTagsForItem({ owner, type, id, newTags }) {
 	.map(R.prop('Attributes'))
 }
 
+function updateContentForItem({ owner, type, id, contentJSON }) {
+	return updateItem({
+		TableName: itemsTable,
+		Key: {
+			ownerID: uniqueIDForOwner(owner),
+			id: uniqueIDForTypeAndID(type, id)
+		},
+		UpdateExpression: 'SET #contentJSON = :contentJSON',
+		ExpressionAttributeNames: {
+			'#contentJSON': 'contentJSON'
+		},
+		ExpressionAttributeValues: {
+			':contentJSON': JSON.stringify(contentJSON)
+		},
+		ReturnValues: 'ALL_NEW'
+	})
+	.map(R.prop('Attributes'))
+}
+
 // function writeItems(documents) {
 // 	return new Promise((resolve, reject) => {
 // 		itemsDyno.batchWriteAll({
@@ -159,5 +196,6 @@ module.exports = {
 	readItem,
 	//writeItems,
 	createItem,
-	updateTagsForItem
+	updateTagsForItem,
+	updateContentForItem
 }

@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk')
 const R = require('ramda')
 
-const storiesS3 = new AWS.S3({
+const publicStoriesS3 = new AWS.S3({
   accessKeyId: process.env.AWS_STORIES_USER_ACCESS_KEY,
   secretAccessKey: process.env.AWS_STORIES_USER_SECRET,
   region: process.env.AWS_STORIES_REGION
@@ -11,7 +11,7 @@ const bucket = process.env.AWS_S3_STORIES_BUCKET
 const keyForHMACStory = (hmac) => `stories/hmac/${hmac}`
 
 function listStoryHMACs() {
-  return storiesS3.listObjectsV2({
+  return publicStoriesS3.listObjectsV2({
     Bucket: bucket,
     Prefix: 'stories/hmac/'
   }).promise()
@@ -25,14 +25,14 @@ function listStoryHMACs() {
 }
 
 function readHMACStory(hmac) {
-  return storiesS3.getObject({
+  return publicStoriesS3.getObject({
     Bucket: bucket,
     Key: keyForHMACStory(hmac),
   }).promise()
 }
 
 function upload(key, body) {
-  return storiesS3.upload({
+  return publicStoriesS3.upload({
     Bucket: bucket,
     Key: key,
     Body: body
