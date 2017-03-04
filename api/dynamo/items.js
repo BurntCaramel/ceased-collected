@@ -91,7 +91,7 @@ function readItem({ owner, type, id }) {
 		}
 	})
 	.map(R.prop('Item'))
-	.map(formatItem)
+	.map(R.unless(R.isNil, formatItem))
 }
 
 function createItem({ owner, type, tags = [], name = 'Untitled', contentJSON }) {
