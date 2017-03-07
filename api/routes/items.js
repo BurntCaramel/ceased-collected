@@ -6,6 +6,7 @@ const {
 	itemTypes,
 	readAllItemsForOwner,
 	readAllItemsForType,
+	countAllItemsForType,
 	readItem,
 	createItem,
 	updateItemWithChanges,
@@ -69,6 +70,13 @@ const handlers = {
 			readAllItemsForType({ owner, type })
 		)
 	},
+	countItemsForType({
+		pre: { owner, type }
+	}, reply) {
+		reply(
+			countAllItemsForType({ owner, type })
+		)
+	},
 	item({
 		pre: { owner, type },
 		params: { id },
@@ -94,6 +102,13 @@ const ownerValidator= Joi.object({
 })
 
 module.exports = [
+	{
+		method: 'GET',
+		path: ownerPathPrefix(''),
+		config: {
+			handler: handlers.owner
+		}
+	},
 	{
 		method: 'GET',
 		path: ownerPathPrefix('/items'),
@@ -124,6 +139,33 @@ module.exports = [
 				]
 			],
 			handler: handlers.itemsForType
+		}
+	},
+	{
+		method: 'GET',
+		path: ownerPathPrefix('/items/type:{itemType}:count'),
+		config: {
+			pre: [
+				[
+					{
+						assign: 'owner',
+						method: handlers.owner
+					},
+					{
+						assign: 'type',
+						method: handlers.itemType
+					}
+				],
+				[
+					{
+						assign: 'count',
+						method: handlers.countItemsForType
+					}
+				]
+			],
+			handler({ pre: { count } }, reply) {
+				reply({ count })
+			}
 		}
 	},
 	{

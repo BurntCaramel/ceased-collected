@@ -95,10 +95,28 @@ function readAllItemsForType({ owner, type }) {
 	})
 	.map(R.prop('Items'))
 	.map(items => items.map(formatItem))
-	.catch(error => {
-		console.error(error)
-		throw error
+}
+
+function countAllItemsForType({ owner, type }) {
+	return query({
+		TableName: itemsTable,
+		// IndexName: 'Type',
+		// KeyConditionExpression: 'ownerID = :ownerID and #type = :type',
+		// ExpressionAttributeNames: {
+		// 	'#type': 'type'
+		// },
+		KeyConditionExpression: 'ownerID = :ownerID and begins_with(#id, :type)',
+		ExpressionAttributeNames: {
+			'#id': 'id'
+		},
+		ExpressionAttributeValues: {
+			':ownerID': uniqueIDForOwner(owner),
+			':type': `${type}:`
+			//':type': type
+		},
+		Select: 'COUNT'
 	})
+	.map(R.prop('Count'))
 }
 
 function readItem({ owner, type, id }) {
@@ -228,6 +246,7 @@ module.exports = {
 	itemTypes: types,
 	readAllItemsForOwner,
 	readAllItemsForType,
+	countAllItemsForType,
 	readItem,
 	//writeItems,
 	createItem,
