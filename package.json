@@ -1,10 +1,20 @@
 {
   "scripts": {
-		"start": "cd app-react && yarn start",
+    "start": "node app.js",
+		"start:dev": "PORT=3010 node -r dotenv/config app.js",
+    "start:react": "cd app-react && yarn start",
     "deploy:api": "cd api && node .deploy.js",
     "deploy:app-react": "cd app-react && now -e REACT_APP_API_URL=https://1.stories.icing.space"
   },
-	"engines": {
-		"node": ">= 7.6.0"
-	}
+  "engines": {
+    "node": ">= 7.6.0"
+  },
+  "dependencies": {
+    "boom": "^4.2.0",
+    "hapi": "^16.1.0",
+    "inert": "^4.1.0"
+  },
+  "devDependencies": {
+    "dotenv": "^4.0.0"
+  }
 }
