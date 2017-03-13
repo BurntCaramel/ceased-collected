@@ -94,7 +94,7 @@ const handlers = {
 	}
 }
 
-const ownerPathPrefix = (rest) => `/@{ownerType}/{ownerID}${rest}`
+const ownerPathPrefix = (rest) => `/1/@{ownerType}/{ownerID}${rest}`
 
 const ownerValidator= Joi.object({
 	ownerType: Joi.string().required(),

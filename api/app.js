@@ -1,5 +1,4 @@
 const Hapi = require('hapi')
-const R = require('ramda')
 
 if (process.env.NODE_ENV === 'development') {
 	require('dotenv').config()
