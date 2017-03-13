@@ -5,7 +5,7 @@ COPY ./api ./api
 COPY ./app-react ./app-react
 RUN npm install yarn -g
 RUN cd api && yarn install --production
-RUN cd app-react && yarn install && yarn run build
+RUN cd app-react && npm install && npm run build
 
 # if we don't use this specific form, SIGINT/SIGTERM doesn't get forwarded
 CMD node app.js
