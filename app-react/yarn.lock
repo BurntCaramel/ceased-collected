@@ -1409,6 +1409,12 @@ compression@^1.5.2, compression@^1.6.2:
     on-headers "~1.0.1"
     vary "~1.1.0"
 
+computed-async-mobx@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/computed-async-mobx/-/computed-async-mobx-1.2.0.tgz#f1d247870824d9b7c5a420b2477dc0ffada22587"
+  dependencies:
+    mobx "^3.0.0"
+
 concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
@@ -2455,9 +2461,9 @@ function-bind@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771"
 
-gateau@0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/gateau/-/gateau-0.2.5.tgz#a5f7e006394fa33f515fad58f6acda326e921377"
+gateau@^0.2.6:
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/gateau/-/gateau-0.2.6.tgz#8cccc4ce4ab3df73c428a96aa21dda99895457d9"
   dependencies:
     creed "^1.0.3"
     lodash "^4.14.1"
@@ -3936,11 +3942,7 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-mobx, mobx@^3.0.2:
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.0.2.tgz#ade8e83434f7a73868d2632603b6d17da530427c"
-
-mobx-location:
+mobx-location@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/mobx-location/-/mobx-location-0.1.1.tgz#4f9c45b5aa0203925fe55fa0225220698ef3259c"
 
@@ -3949,6 +3951,10 @@ mobx-react, mobx-react@^4.1.0:
   resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-4.1.0.tgz#0b4927a8c4457dbb296c512693acdf9073d9afc7"
   dependencies:
     hoist-non-react-statics "^1.2.0"
+
+mobx@3.1.3, mobx@^3.0.0, mobx@^3.0.2:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-3.1.3.tgz#5bc1f925f7d145f64d779f40fd4a6daa6d1314ee"
 
 ms@0.7.1:
   version "0.7.1"

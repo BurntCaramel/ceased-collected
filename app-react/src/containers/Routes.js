@@ -2,20 +2,46 @@ import React from 'react'
 import { observer } from 'mobx-react'
 import location from 'mobx-location'
 import { createStoriesObservable } from '../managers/stories'
+import { createCollectionsObservable } from '../managers/collections'
 import LandingPage from './LandingPage'
 import Stories from './Stories'
+import Collections from './Collections'
 import EditStory from './EditStory'
 import PreviewStory from './PreviewStory'
 import OwnerNav from '../components/OwnerNav'
 
 const ownerRoutes = {
-	_: ({ storiesManager }, []) => (
-		<OwnerNav owner={ storiesManager.owner } />
-	),
-	'stories': ({ storiesManager }, []) => (
+	_: ({ owner, collectionsManager }, []) => (
 		<div>
-			<OwnerNav owner={ storiesManager.owner } />
-			<Stories storiesManager={ storiesManager } owner={ storiesManager.owner } />
+			<OwnerNav owner={ owner } />
+			{
+				owner.type === 'collection' ? (
+					<Collections
+						collectionsManager={ collectionsManager }
+						itemID={ owner.id }
+					/>
+				) : null
+			}
+		</div>
+	),
+	'stories': ({ owner, storiesManager }, [ id ]) => (
+		<div>
+			<OwnerNav owner={ owner } sectionTitle='Stories' />
+			<Stories
+				storiesManager={ storiesManager }
+				owner={ owner }
+				id={ id }
+			/>
+		</div>
+	),
+	'collections': ({ owner, collectionsManager }, [ id ]) => (
+		<div>
+			<OwnerNav owner={ owner } sectionTitle='Collections' />
+			<Collections
+				collectionsManager={ collectionsManager }
+				owner={ owner }
+				itemID={ id }
+			/>
 		</div>
 	)
 }
@@ -24,21 +50,33 @@ const routes = {
 	_: [
 		{
 			assign: 'isCollection',
-			method: (pathComponent) => pathComponent === '@collection',
+			method: (pathComponent) => pathComponent === 'collections',
 			routes: [
 				{
-					assign: 'storiesManager',
-					method: (id) => createStoriesObservable({ owner: { type: 'collection', id } }),
+					assign: ['owner', 'collectionsManager', 'storiesManager'],
+					method: (id) => {
+						const owner = { type: 'collection', id }
+						return {
+							owner,
+							collectionsManager: createCollectionsObservable({ owner: null }),
+							storiesManager: createStoriesObservable({ owner })
+						}
+					},
 					routes: ownerRoutes
 				}
 			]
 		},
 		{
-			assign: 'storiesManager',
+			assign: ['owner', 'collectionsManager', 'storiesManager'],
 			method: (pathComponent) => {
 				if (pathComponent[0] === '@') {
 					const id = pathComponent.substring(1)
-					return createStoriesObservable({ owner: { type: 'organization', id } })
+					const owner = { type: 'organization', id }
+					return {
+						owner,
+						storiesManager: createStoriesObservable({ owner }),
+						collectionsManager: createCollectionsObservable({ owner })
+					}
 				}
 			},
 			routes: ownerRoutes
@@ -103,7 +141,14 @@ function Routes(props, { NotFound = NotFoundDefault } = {}) {
 						console.log('route matches', extraction)
 						if (extraction) {
 							if (childRoute.assign) {
-								propsCopy[childRoute.assign] = extraction
+								if (Array.isArray(childRoute.assign)) {
+									childRoute.assign.forEach(key => {
+										propsCopy[key] = extraction[key]
+									})
+								}
+								else {
+									propsCopy[childRoute.assign] = extraction
+								}
 							}
 							newRoutes = childRoute.routes
 							usedComponent = true
@@ -117,7 +162,7 @@ function Routes(props, { NotFound = NotFoundDefault } = {}) {
 			}
 		}
 
-		if (!usedComponent) {
+		if (!usedComponent && pathComponent != '') {
 			rest = rest.concat(pathComponent)
 		}
 

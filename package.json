@@ -2,6 +2,7 @@
   "scripts": {
     "start": "node app.js",
 		"start:dev": "PORT=3010 node -r dotenv/config app.js",
+		"build:app-react": "cd app-react && yarn run build",
     "start:react": "cd app-react && yarn start",
     "deploy:api": "cd api && node .deploy.js",
     "deploy:app-react": "cd app-react && now -e REACT_APP_API_URL=https://1.stories.icing.space"

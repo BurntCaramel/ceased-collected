@@ -8,11 +8,14 @@ function renderOwnerType(type) {
 	}
 }
 
-export default function OwnerNav({ owner }) {
+export default function OwnerNav({ owner, sectionTitle }) {
 	const { type, id } = owner
 	return (
-		<nav>
-      <h2>{ renderOwnerType(type) } { id }</h2>
+		<nav className="primary">
+      <h2>
+				{ renderOwnerType(type) } { id }
+				{ sectionTitle && <span> · { sectionTitle }</span> }
+			</h2>
 		</nav>
 	)
 }

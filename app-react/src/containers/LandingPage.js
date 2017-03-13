@@ -6,15 +6,15 @@ export default function LandingPage({ onSaveStory }) {
 	return (
 		<div>
 			<header>
-				<h1>Low fidelity prototyping allows high fidelity answers sooner</h1>
+				<h1>{ 'Get feedback sooner with rapid prototyping' }</h1>
 			</header>
 			<section>
-				<h2>Make UIs with just hashtags and share with anyone</h2>
+				<h2>{ 'Create low fidelity screens, emails, and promotions and share with users & stakeholders' }</h2>
 				<ul>
-					<li>Preview live as Bootstrap, Foundation, and vanilla web</li>
-					<li>Create user interfaces in minutes</li>
+					<li>Prototype with just words and #hashtags</li>
+					<li>Make and iterate user interfaces in minutes</li>
+					<li>Preview screens as live Bootstrap, Foundation, and vanilla web</li>
 					<li>No HTML/CSS skills needed</li>
-					<li>Design by writing #hashtags and @mentions</li>
 				</ul>
 				<a href='/stories/new' className='primary'>
 					<h2>Create your own story</h2>

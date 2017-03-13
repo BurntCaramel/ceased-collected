@@ -81,7 +81,7 @@ export default class StoryEditor extends React.Component {
 								}
 								{ onSaveStory &&
 									<button onClick={ this.onSave }>
-										{ saving ? 'Saving…' : 'Save story' }
+										{ saving ? 'Saving…' : 'Save iteration' }
 									</button>
 								}
 								{ onDelete &&

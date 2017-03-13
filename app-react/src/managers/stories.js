@@ -1,20 +1,47 @@
 import { extendObservable, observable, action } from 'mobx'
-import { makeCollectionLoader } from './promises'
+import { makeLoader, makeCollectionLoader } from './promises'
 import * as itemsAPI from '../api/items'
 
 export const createStoriesObservable = ({ owner }) => observable({
 	owner,
+	changeCount: 0,
 
-	get _storiesLoader() {
-		return makeCollectionLoader(
-			itemsAPI.listWithType({
+	_storiesLoader: makeCollectionLoader({
+		list: () => itemsAPI.listWithType({
+			owner,
+			type: 'story'
+		})
+	}),
+	get stories() {
+		return this._storiesLoader.items
+	},
+
+	get _countLoader() {
+		return makeLoader(
+			itemsAPI.countWithType({
 				owner: this.owner,
 				type: 'story'
 			})
 		)
 	},
-	get stories() {
-		return this._storiesLoader.items
+	get totalStoriesCount() {
+		return this._countLoader.result
+	},
+	get totalDisplay() {
+		const count = this.totalStoriesCount
+		if (count == null) {
+			return
+		}
+
+		if (count === 0) {
+				return 'No stories yet'
+			}
+		else if (count === 1) {
+			return '1 story'
+		}
+		else {
+			return `${count} stories`
+		}
 	},
 
 	storyStatus: observable.map(),
@@ -44,14 +71,18 @@ export const createStoriesObservable = ({ owner }) => observable({
 			name: 'Untitled'
 		}
 
-		itemsAPI.createItem({
+		return itemsAPI.createItem({
 			owner: this.owner,
 			type: 'story',
 			...newStory
 		})
 		.then((story) => {
 			story = { ...story, ...newStory }
-			this.stories.splice(0, 0, story)
+			this._storiesLoader.alterItems((stories) => {
+				stories.splice(0, 0, story)
+			})
+
+			return story
 		})
 	}),
 
@@ -84,30 +115,3 @@ export const createStoriesObservable = ({ owner }) => observable({
 		})
 	})
 })
-
-const storyObservableTemplate = {
-	saving: false,
-
-	onSaved: action.bound(function() {
-		this.saving = false
-	}),
-	onSaveStory: action.bound(function({ contentJSON, name, previewDestination }, id) {
-		this.saving = true
-
-		const { props } = this.instance
-
-		itemsAPI.updateItem({
-			owner: props.owner,
-			type: 'story',
-			id,
-			contentJSON,
-			name,
-			previewDestination
-		})
-		.then(this.onSaved)
-	}),
-
-	onEditName: action.bound(function(name) {
-		this.name = name
-	})
-}

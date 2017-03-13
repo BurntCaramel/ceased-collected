@@ -5,11 +5,11 @@ import { fetchJSON, postJSON } from './init'
 //   return fetchJSON('/stories')
 // }
 export function list() {
-  return fetchJSON('/@organizations/1/items/stories')
+  return fetchJSON('/1/@organizations/1/items/stories')
 }
 
 export function readWithID(id) {
-  return fetchJSON(`/@organizations/1/items/stories/${id}`)
+  return fetchJSON(`/1/@organizations/1/items/stories/${id}`)
 }
 
 export function readWithHMAC(hmac) {
@@ -21,11 +21,11 @@ export function create({ contentJSON }) {
 }
 
 export function readInOrganization({ uuid, organizationID, authToken }) {
-  return fetchJSON(`/@${organizationID}/stories/${uuid}`)
+  return fetchJSON(`/1/@${organizationID}/stories/${uuid}`)
 }
 
 export function createInOrganization({ storyJSON, organizationID, authToken }) {
-  return postJSON(`/@${organizationID}/stories`, storyJSON, {
+  return postJSON(`/1/@${organizationID}/stories`, storyJSON, {
     headers: Object.assign({},
       authToken && {
         'Authorization': `Bearer ${authToken}`

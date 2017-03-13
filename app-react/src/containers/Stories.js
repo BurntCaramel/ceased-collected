@@ -1,12 +1,56 @@
 import React from 'react'
-import { extendObservable, observable, action } from 'mobx'
 import { observer } from 'mobx-react'
-import * as itemsAPI from '../api/items'
+import Link from '../components/Link'
+import Item from '../components/Item'
 import StoryEditor from '../components/StoryEditor'
+import { pathTo } from '../routing/paths'
+import goTo from '../routing/goTo'
+import * as types from '../managers/types'
+
+const StorySummary = observer(function StorySummary({
+	owner,
+	story,
+	primary = false,
+	storiesManager
+}) {
+	if (primary) {
+		return (
+			<StoryEditor
+				owner={ owner }
+				id={ story.id }
+				initialJSON={ story.contentJSON }
+				initialPreviewDestination={ story.previewDestination }
+				name={ story.name }
+				onSaveStory={ storiesManager.onSave }
+				onEditName={ storiesManager.onChangeName }
+				onDelete={ storiesManager.onDelete }
+				saving={ storiesManager.isSaving(story.id) }
+			/>
+		)
+	}
+	else {
+		return (
+			<Item
+				owner={ owner }
+				type={ types.story }
+				id={ story.id }
+				name={ story.name }
+				primary={ primary }
+			>
+				<pre>{ story.contentJSON.body }</pre>
+				{ false && <p><small>{ story.previewDestination.framework }</small></p> }
+			</Item>
+		)
+	}
+})
 
 class Stories extends React.Component {
-	state = {
-		stories: null
+	onNew = (event) => {
+		const { storiesManager, owner } = this.props
+		storiesManager.onNew()
+		.then(item => {
+			goTo(pathTo([owner, { type: types.story, id: item.id }]))
+		})
 	}
 
 	render() {
@@ -16,9 +60,10 @@ class Stories extends React.Component {
 		return (
 			<article>
 				<section>
-					<button onClick={ storiesManager.onNew }>
+					<button onClick={ this.onNew }>
 						New story
 					</button>
+					<span>{ storiesManager.totalStoriesDisplay }</span>
 				</section>
 				{
 					stories ? (
@@ -26,7 +71,12 @@ class Stories extends React.Component {
 							<p>{ '🐣 Hatch the first story here' }</p>
 						) : (
 							stories.map((story, index) => (
-								<StoryEditor
+								<StorySummary key={ story.id }
+									owner={ storiesManager.owner }
+									story={ story }
+									storiesManager={ storiesManager }
+								/>
+								/*<StoryEditor key={ story.id }
 									owner={ storiesManager.owner }
 									id={ story.id }
 									initialJSON={ story.contentJSON }
@@ -36,7 +86,7 @@ class Stories extends React.Component {
 									onEditName={ storiesManager.onChangeName }
 									onDelete={ storiesManager.onDelete }
 									saving={ storiesManager.isSaving(story.id) }
-								/>
+								/>*/
 							))
 						)
 					) : (
