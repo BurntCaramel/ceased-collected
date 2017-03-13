@@ -1,9 +1,9 @@
 FROM node:7.2.0-alpine
 
 WORKDIR /app
-COPY ./api ./api
-COPY ./app-react ./app-react
+COPY . .
 RUN npm install yarn -g
+RUN yarn install
 RUN cd api && yarn install --production
 RUN cd app-react && npm install && npm run build
 
