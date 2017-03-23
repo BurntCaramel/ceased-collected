@@ -7,6 +7,7 @@ import Button from '../components/Button'
 import Tabs from '../components/Tabs'
 import Field from '../components/Field'
 import Label from '../components/Label'
+import OwnerNav from '../components/OwnerNav'
 import { pathTo } from '../routing/paths'
 import goTo from '../routing/goTo'
 import * as types from '../constants/itemTypes'
@@ -43,6 +44,7 @@ const Child = observer(class Child extends React.Component {
 			}),
 
 			syncChanges: action.bound(function(performSync, item) {
+				console.log('Saving')
 				this.sendingSync = true
 				performSync({
 					name: this.name,
@@ -72,21 +74,7 @@ const Child = observer(class Child extends React.Component {
 				body: this.stateManager.body
 			}),
 			({ name, body }) => {
-				console.log('Saving')
 				this.onSyncChanges()
-				/*this.stateManager.sendingSync = true
-				this.props.onUpdate({
-					name,
-					contentJSON: { body }
-				}, this.props.item)
-				.then(action(result => {
-					this.stateManager.sendingSync = false
-					this.stateManager.needsSync = false
-					// Update with latest from API
-					// FIXME: merge
-					//this.stateManager.body = result.contentJSON.body
-					console.log('Saved', result)
-				}))*/
 			}, {
 				delay: 2000,
 				compareStructural: true,
@@ -110,6 +98,8 @@ const Child = observer(class Child extends React.Component {
 				<Row>
 					<Field value={ name } grow={ 1 } onChange={ onChangeName } />
 					&nbsp;
+					<Button title='X' />
+					&nbsp;
 					<span
 						style={{
 							opacity: needsSync ? 0.7 : 1.0
@@ -132,11 +122,12 @@ const JourneyContent = observer(function JourneyContent({
 }) {
 	const { items } = childrenManager
 	return (
-		<div>
-			<Label title='Make new:'>
-				<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
-			</Label>
-			Items: { childrenManager.totalCount }
+		<div style={{ marginTop: '1rem' }}>
+			<Row marginBottom='1rem'>
+				<Label title='Make new:'>
+					<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
+				</Label>
+			</Row>
 			{
 				!!items ? (
 					items.map(item => (
@@ -222,28 +213,33 @@ class Journies extends React.Component {
 		const { focusedID, focusedItem } = journiesManager
 		console.log('<Journies> render focusedID', focusedID, this.props.itemID)
 		return (
-			<article>
+			focusedID == null ? (
+				<div>
+					<OwnerNav owner={ owner } sectionTitle='Journeys' />
+					<JourniesList
+						journies={ journiesManager.journies }
+						owner={ owner }
+						onNew={ this.onNew }
+					/>
+				</div>
+			) : (
+				<div>
+					<OwnerNav
+						owner={{ type: types.journey, id: focusedID }}
+						name={ !!focusedItem ? focusedItem.name : 'Loading…' }
+					/>
 				{
-					focusedID == null ? (
-						<JourniesList
-							journies={ journiesManager.journies }
-							owner={ owner }
-							onNew={ this.onNew }
+					!!focusedItem ? (
+						<JourneyContent
+							owner={ focusedItem }
+							childrenManager={ journiesManager.focusedItemChildrenManager }
 						/>
 					) : (
-						!!focusedItem ? (
-							<Journey
-								journey={ focusedItem }
-								owner={ owner }
-								primary
-								journiesManager={ journiesManager }
-							/>
-						) : (
-							'Loading journey'
-						)
+						null
 					)
 				}
-			</article>
+				</div>
+			)
 		)
 	}
 }

@@ -7,7 +7,7 @@ import { createJourniesObservable } from '../managers/journies'
 import { createCollectionsObservable } from '../managers/collections'
 import LandingPage from '../containers/LandingPage'
 import Stories from '../containers/Stories'
-import Journies from '../containers/Journies'
+import Journies, { Journey } from '../containers/Journies'
 import Collections from '../containers/Collections'
 import EditStory from '../containers/EditStory'
 import PreviewStory from '../containers/PreviewStory'
@@ -38,20 +38,11 @@ const ownerRoutes = {
 		</div>
 	),
 	'journeys': ({ owner, journiesManager }, [ itemID ]) => (
-		<div>
-			{
-				!!itemID ? (
-					<OwnerNav owner={{ type: types.journey, id: itemID }} />
-				) : (
-					<OwnerNav owner={ owner } sectionTitle='Journeys' />
-				)
-			}
-			<Journies
-				journiesManager={ journiesManager }
-				owner={ owner }
-				itemID={ itemID }
-			/>
-		</div>
+		<Journies
+			journiesManager={ journiesManager }
+			owner={ owner }
+			itemID={ itemID }
+		/>
 	),
 	'collections': ({ owner, collectionsManager }, [ itemID ]) => (
 		<div>
