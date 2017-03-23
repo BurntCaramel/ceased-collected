@@ -40,8 +40,31 @@ const Child = observer(class Child extends React.Component {
 			onChangeBody: action.bound(function({ target: { value } }) {
 				this.body = value
 				this.needsSync = true
+			}),
+
+			syncChanges: action.bound(function(performSync, item) {
+				this.sendingSync = true
+				performSync({
+					name: this.name,
+					contentJSON: { body: this.body }
+				}, item)
+				.then(action(result => {
+					this.sendingSync = false
+					this.needsSync = false
+					// Update with latest from API
+					// FIXME: merge
+					//this.body = result.contentJSON.body
+					console.log('Saved', result)
+				}))
 			})
 		})
+
+		this.onSyncChanges = () => {
+			this.stateManager.syncChanges(
+				this.props.onUpdate,
+				this.props.item
+			)
+		}
 
 		this.disposeBodyReaction = reaction(
 			() => ({
@@ -50,7 +73,8 @@ const Child = observer(class Child extends React.Component {
 			}),
 			({ name, body }) => {
 				console.log('Saving')
-				this.stateManager.sendingSync = true
+				this.onSyncChanges()
+				/*this.stateManager.sendingSync = true
 				this.props.onUpdate({
 					name,
 					contentJSON: { body }
@@ -60,9 +84,9 @@ const Child = observer(class Child extends React.Component {
 					this.stateManager.needsSync = false
 					// Update with latest from API
 					// FIXME: merge
-					this.stateManager.body = result.contentJSON.body
+					//this.stateManager.body = result.contentJSON.body
 					console.log('Saved', result)
-				}))
+				}))*/
 			}, {
 				delay: 2000,
 				compareStructural: true,
@@ -78,7 +102,7 @@ const Child = observer(class Child extends React.Component {
 
 	render() {
 		const { item, owner } = this.props
-		const { name, body, onChangeName, onChangeBody } = this.stateManager
+		const { name, body, needsSync, sendingSync, onChangeName, onChangeBody } = this.stateManager
 		return (
 			<div style={{
 				marginBottom: '1rem'
@@ -86,7 +110,14 @@ const Child = observer(class Child extends React.Component {
 				<Row>
 					<Field value={ name } grow={ 1 } onChange={ onChangeName } />
 					&nbsp;
-					{ '#' + item.type }
+					<span
+						style={{
+							opacity: needsSync ? 0.7 : 1.0
+						}}
+						onClick={ this.onSyncChanges }
+					>
+						{ '#' + item.type }
+					</span>
 				</Row>
 				<Row>
 					<Field value={ body } grow={ 1 } rows={ 5 } onChange={ onChangeBody } />
