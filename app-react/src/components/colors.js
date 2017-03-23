@@ -9,7 +9,8 @@ export const mid = {
     normal: '#ccc'
 }
 export const lightness = {
-    normal: '#f6f6f6',
+    //normal: '#fafafa',
+		normal: '#fff',
     shade: '#eee'
 }
 

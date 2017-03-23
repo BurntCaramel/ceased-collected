@@ -18,6 +18,7 @@ export default function OwnerNav({ owner, sectionTitle }) {
 				{ renderOwnerType(type) } { id }
 				{ sectionTitle && <span> · { sectionTitle }</span> }
 			</h2>
+			{ `#${type}` }
 		</nav>
 	)
 }

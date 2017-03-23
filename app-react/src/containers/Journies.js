@@ -1,6 +1,7 @@
 import React from 'react'
 import { observable, action, reaction } from 'mobx'
 import { observer } from 'mobx-react'
+import Row from '../components/Row'
 import Item from '../components/Item'
 import Button from '../components/Button'
 import Tabs from '../components/Tabs'
@@ -82,14 +83,14 @@ const Child = observer(class Child extends React.Component {
 			<div style={{
 				marginBottom: '1rem'
 			}}>
-				<div>
-					<Field value={ name } onChange={ onChangeName } />
-					{ ' #' + item.type }
-				</div>
-				<textarea value={ body } onChange={ onChangeBody } rows={ 5 } style={{
-					display: 'block',
-					width: '100%'
-				}} />
+				<Row>
+					<Field value={ name } grow={ 1 } onChange={ onChangeName } />
+					&nbsp;
+					{ '#' + item.type }
+				</Row>
+				<Row>
+					<Field value={ body } grow={ 1 } rows={ 5 } onChange={ onChangeBody } />
+				</Row>
 			</div>
 		)
 	}

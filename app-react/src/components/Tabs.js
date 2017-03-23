@@ -5,39 +5,38 @@ import Button from './Button'
 import * as colors from './colors'
 
 const tabClasses = [
-    fallow({
-        display: 'block'
-    }),
-    fallow({
-        screen: { minWidth: '480px' },
-        display: 'inline-block'
-    })
+	fallow({
+		display: 'block'
+	}),
+	fallow({
+		screen: { minWidth: '480px' },
+		display: 'inline-block'
+	})
 ]
 
 const styles = seeds({
-    row: true,
-    overflow: 'hidden',
-    //inlineBlock: true,
-    border: { width: 1, style: 'solid', color: colors.action.normal },
-    cornerRadius: 5
+	row: true,
+	overflow: 'hidden',
+	border: { width: 1, style: 'solid', color: colors.action.normal },
+	cornerRadius: 5
 })
 
 export default function Tabs({ items, selectedID, onSelectID }) {
-    return (
-        <nav
-            { ...styles }
-        >
-        {
-            items.map(({ title, id }) => (
-                <Button key={ id }
-                    tab
-                    title={ title }
-                    selected={ selectedID === id }
-                    classes={ tabClasses }
-                    onClick={ !!onSelectID ? onSelectID.bind(null, id) : null }
-                />
-            ))
-        }
-        </nav>
-    )
+	return (
+		<nav
+			{ ...styles }
+		>
+		{
+			items.map(({ title, id }) => (
+				<Button key={ id }
+					tab
+					title={ title }
+					selected={ selectedID === id }
+					classes={ tabClasses }
+					onClick={ !!onSelectID ? onSelectID.bind(null, id) : null }
+				/>
+			))
+		}
+		</nav>
+	)
 }
