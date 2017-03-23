@@ -2,7 +2,9 @@ import React from 'react'
 import seeds from 'react-seeds'
 
 const styler = seeds({
-	row: true
+	row: true,
+	maxWidth: 800,
+	margin: 'auto'
 })
 
 export default function Row({ children }) {

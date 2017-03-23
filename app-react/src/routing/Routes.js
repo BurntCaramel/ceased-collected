@@ -37,9 +37,15 @@ const ownerRoutes = {
 			/>
 		</div>
 	),
-	'journies': ({ owner, journiesManager }, [ itemID ]) => (
+	'journeys': ({ owner, journiesManager }, [ itemID ]) => (
 		<div>
-			<OwnerNav owner={ owner } sectionTitle='Journies' />
+			{
+				!!itemID ? (
+					<OwnerNav owner={{ type: types.journey, id: itemID }} />
+				) : (
+					<OwnerNav owner={ owner } sectionTitle='Journeys' />
+				)
+			}
 			<Journies
 				journiesManager={ journiesManager }
 				owner={ owner }
@@ -61,7 +67,7 @@ const ownerRoutes = {
 
 const routes = {
 	_: [
-		{
+		/*{
 			assign: 'isJourney',
 			method: (pathComponent) => pathComponent === 'journies',
 			routes: [
@@ -87,7 +93,7 @@ const routes = {
 					),
 				}
 			]
-		},
+		},*/
 		{
 			assign: 'isCollection',
 			method: (pathComponent) => pathComponent === 'collections',
