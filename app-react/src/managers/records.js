@@ -1,6 +1,5 @@
 import { extendObservable } from 'mobx'
-import * as types from './types'
-import * as itemsAPI from '../api/items'
+import * as types from '../constants/itemTypes'
 import { createItemsObservable } from './items'
 
 export const createRecordsObservable = ({ owner }) => extendObservable(

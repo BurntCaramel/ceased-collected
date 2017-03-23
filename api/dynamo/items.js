@@ -74,6 +74,18 @@ function readAllItemsForOwner({ owner }) {
 	.map(items => items.map(formatItem))
 }
 
+function countAllItemsForOwner({ owner }) {
+	return query({
+		TableName: itemsTable,
+		KeyConditionExpression: 'ownerID = :ownerID',
+		ExpressionAttributeValues: {
+			':ownerID': uniqueIDForOwner(owner)
+		},
+		Select: 'COUNT'
+	})
+	.map(R.prop('Count'))
+}
+
 function readAllItemsForType({ owner, type }) {
 	return query({
 		TableName: itemsTable,
@@ -145,7 +157,7 @@ function createItem({ owner, type, tags = [], name = 'Untitled', contentJSON }) 
 				contentJSON: JSON.stringify(contentJSON)
 			}
 		})
-		.map(() => ({ type, id }))
+		.map(() => ({ owner, type, id, tags, name, contentJSON }))
 	})
 }
 
@@ -188,9 +200,17 @@ function updateTagsForItem({ owner, type, id, newTags }) {
 }
 
 function updateItemWithChanges({ owner, type, id, changes }) {
-	const updateField = dynamodbUpdateExpression.getUpdateExpression({}, changes)
+	if (changes.contentJSON != null) {
+		// Resolves error with empty strings in DynamoDB
+		// 'Error: ExpressionAttributeValues must not be empty'
+		// https://forums.aws.amazon.com/thread.jspa?threadID=90137
+		changes = Object.assign({}, changes, {
+			contentJSON: JSON.stringify(changes.contentJSON)
+		})
+	}
 
-	console.log('updateField', updateField)
+	const updateField = dynamodbUpdateExpression.getUpdateExpression({}, changes)
+	//console.log('ExpressionAttributeValues', JSON.stringify(updateField.ExpressionAttributeValues, null, 2))
 
 	return updateItem(Object.assign({
 		TableName: itemsTable,
@@ -210,6 +230,10 @@ function updateItemWithChanges({ owner, type, id, changes }) {
 		// },
 	))
 	.map(R.prop('Attributes'))
+	.catch(error => {
+		console.error(error)
+		throw error
+	})
 }
 
 function deleteItem({ owner, type, id }) {
@@ -245,6 +269,7 @@ function deleteItem({ owner, type, id }) {
 module.exports = {
 	itemTypes: types,
 	readAllItemsForOwner,
+	countAllItemsForOwner,
 	readAllItemsForType,
 	countAllItemsForType,
 	readItem,

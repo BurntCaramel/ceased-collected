@@ -18,7 +18,7 @@ const storyValidator = Joi.object({
 module.exports = [
 	{
 		method: 'GET',
-		path: '/stories',
+		path: '/1/stories',
 		handler(req, reply) {
 			reply(
 				listStories()
@@ -27,7 +27,7 @@ module.exports = [
 	},
 	{
 		method: 'GET',
-		path: '/stories/256/{hmac}',
+		path: '/1/stories/256/{hmac}',
 		config: {
 			cors: true,
 			validate: {
@@ -52,7 +52,7 @@ module.exports = [
 	},
 	{
 		method: 'POST',
-		path: '/stories',
+		path: '/1/stories',
 		config: {
 			payload: {
 				output: 'data'

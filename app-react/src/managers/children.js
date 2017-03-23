@@ -2,65 +2,28 @@ import { observable, action } from 'mobx'
 import { makeLoader, makeCollectionLoader } from './promises'
 import * as itemsAPI from '../api/items'
 
-export const createItemsObservable = ({ owner, type, makeNew, displayTextForCount }) => observable({
+export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }) => observable({
 	owner,
 
 	_itemsLoader: makeCollectionLoader({
-		list: () => itemsAPI.listWithType({
-			owner,
-			type
+		list: () => itemsAPI.listItems({
+			owner
 		}),
-		item: (id) => itemsAPI.readItem({
+		item: ({ id, type }) => itemsAPI.readItem({
 			owner,
 			type,
 			id
 		})
 	}),
-	// get _itemsLoader() {
-	// 	const { owner } = this
-	// 	return makeCollectionLoader({
-	// 		list: () => itemsAPI.listWithType({
-	// 			owner,
-	// 			type
-	// 		}),
-	// 		item: (id) => itemsAPI.readItem({
-	// 			owner,
-	// 			type,
-	// 			id
-	// 		})
-	// 	})
-	// },
 	get items() {
-		return !!this.owner && this._itemsLoader.items
+		return this._itemsLoader.items
 	},
 
-	get focusedID() {
-		return this._itemsLoader.focusedID
-	},
-	set focusedID(newID) {
-		this._itemsLoader.focusedID = newID
-	},
-	get focusedItem() {
-		return this._itemsLoader.focusedItem
-	},
-
-	get focusedItemOwner() {
-		const id = this.focusedID
-		if (id == null) {
-			return
-		}
-		return { type, id }
-	},
-
-	get _countLoader() {
-		return makeLoader(
-			itemsAPI.countWithType({
-				owner: this.owner,
-				type
-			}),
-			0
-		)
-	},
+	_countLoader: makeLoader(
+		itemsAPI.countItems({
+			owner
+		})
+	),
 	get totalCount() {
 		return this._countLoader.result
 	},
@@ -73,7 +36,7 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 		return this.itemStatus.get(id)
 	},
 
-	onSave: action.bound(function(changes, id) {
+	onUpdate: action.bound(function(changes, { id, type }) {
 		this.itemStatus.set(id, true)
 
 		return itemsAPI.updateItem({
@@ -82,22 +45,23 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 			id,
 			...changes
 		})
-		.then(action(() => {
+		.then(action((result) => {
 			this.itemStatus.delete(id)
+			return result
 		}))
 	}),
 
 	// -> Promise<{ id }>
-	createNew: action.bound(function() {
-		const newItem = makeNew()
+	createNewWithType: action.bound(function(type) {
+		const baseProperties = !!makeNew ? makeNew(type) : {}
 
 		return itemsAPI.createItem({
 			owner: this.owner,
 			type,
-			...newItem
+			...baseProperties
 		})
 		.then((item) => {
-			item = { ...item, ...newItem }
+			item = { ...baseProperties, ...item }
 			this._itemsLoader.alterItems((items) => {
 				items.splice(0, 0, item)
 			})
@@ -105,7 +69,7 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 		})
 	}),
 
-	deleteWithID: action.bound(function(id) {
+	deleteWithID: action.bound(function({ id, type }) {
 		return itemsAPI.deleteItem({
 			owner: this.owner,
 			type,
@@ -123,7 +87,7 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 		})
 	}),
 
-	changeNameOf: action.bound(function(name, id) {
+	changeNameOf: action.bound(function(name, { id, type }) {
 		this._itemsLoader.alterItems((items) => {
 			const index = items.peek().findIndex(item => item.id == id)
 			if (index === -1) {

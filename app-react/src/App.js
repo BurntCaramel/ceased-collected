@@ -7,7 +7,7 @@ import * as eventsAPI from './api/events'
 import StoryEditor from './components/StoryEditor'
 import EventList from './components/EventList'
 import makeLoadable from './components/makeLoadable'
-import Routes from './containers/Routes'
+import Routes from './routing/Routes'
 import './App.css'
 
 const eventListRenderers = [

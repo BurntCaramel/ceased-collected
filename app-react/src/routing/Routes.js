@@ -1,13 +1,16 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import location from 'mobx-location'
+import * as types from '../constants/itemTypes'
 import { createStoriesObservable } from '../managers/stories'
+import { createJourniesObservable } from '../managers/journies'
 import { createCollectionsObservable } from '../managers/collections'
-import LandingPage from './LandingPage'
-import Stories from './Stories'
-import Collections from './Collections'
-import EditStory from './EditStory'
-import PreviewStory from './PreviewStory'
+import LandingPage from '../containers/LandingPage'
+import Stories from '../containers/Stories'
+import Journies from '../containers/Journies'
+import Collections from '../containers/Collections'
+import EditStory from '../containers/EditStory'
+import PreviewStory from '../containers/PreviewStory'
 import OwnerNav from '../components/OwnerNav'
 
 const ownerRoutes = {
@@ -15,7 +18,7 @@ const ownerRoutes = {
 		<div>
 			<OwnerNav owner={ owner } />
 			{
-				owner.type === 'collection' ? (
+				owner.type === types.collection ? (
 					<Collections
 						collectionsManager={ collectionsManager }
 						itemID={ owner.id }
@@ -34,13 +37,23 @@ const ownerRoutes = {
 			/>
 		</div>
 	),
-	'collections': ({ owner, collectionsManager }, [ id ]) => (
+	'journies': ({ owner, journiesManager }, [ itemID ]) => (
+		<div>
+			<OwnerNav owner={ owner } sectionTitle='Journies' />
+			<Journies
+				journiesManager={ journiesManager }
+				owner={ owner }
+				itemID={ itemID }
+			/>
+		</div>
+	),
+	'collections': ({ owner, collectionsManager }, [ itemID ]) => (
 		<div>
 			<OwnerNav owner={ owner } sectionTitle='Collections' />
 			<Collections
 				collectionsManager={ collectionsManager }
 				owner={ owner }
-				itemID={ id }
+				itemID={ itemID }
 			/>
 		</div>
 	)
@@ -48,6 +61,33 @@ const ownerRoutes = {
 
 const routes = {
 	_: [
+		{
+			assign: 'isJourney',
+			method: (pathComponent) => pathComponent === 'journies',
+			routes: [
+				{
+					assign: ['owner', 'journiesManager'],
+					method: (id) => {
+						const owner = { type: types.journey, id }
+						return {
+							owner,
+							journiesManager: createJourniesObservable({ owner: null })
+						}
+					},
+					routes: ({ owner, journiesManager }, []) => (
+						<div>
+							<OwnerNav owner={ owner } />
+							{
+								<Journies
+									journiesManager={ journiesManager }
+									itemID={ owner.id }
+								/>
+							}
+						</div>
+					),
+				}
+			]
+		},
 		{
 			assign: 'isCollection',
 			method: (pathComponent) => pathComponent === 'collections',
@@ -67,7 +107,7 @@ const routes = {
 			]
 		},
 		{
-			assign: ['owner', 'collectionsManager', 'storiesManager'],
+			assign: ['owner', 'collectionsManager', 'journiesManager', 'storiesManager'],
 			method: (pathComponent) => {
 				if (pathComponent[0] === '@') {
 					const id = pathComponent.substring(1)
@@ -75,6 +115,7 @@ const routes = {
 					return {
 						owner,
 						storiesManager: createStoriesObservable({ owner }),
+						journiesManager: createJourniesObservable({ owner }),
 						collectionsManager: createCollectionsObservable({ owner })
 					}
 				}

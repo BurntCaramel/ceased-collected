@@ -6,14 +6,22 @@ const renderStyle = ({ primary }) => ({
 	marginBottom: primary ? 0 : 16
 })
 
-export default function Item({ owner, type, id, name, children, primary = false }) {
+export default function Item({
+	owner, type, id, name,
+	children,
+	primary = false, noLink = false
+}) {
 	const Heading = primary ? 'h1' : 'h2'
 	return (
 		<article style={ renderStyle({ primary }) }>
 			<Heading>
-				<Link to={ pathTo(owner ? [owner, { type, id }] : [{ type, id }]) }>
-					{ name }
-				</Link>
+				{ noLink ? (
+					name
+				) : (
+					<Link to={ pathTo(owner ? [owner, { type, id }] : [{ type, id }]) }>
+						{ name }
+					</Link>
+				) }
 			</Heading>
 			{ children }
 		</article>

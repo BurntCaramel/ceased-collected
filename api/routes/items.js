@@ -5,6 +5,7 @@ const { resolve, reject } = require('creed')
 const {
 	itemTypes,
 	readAllItemsForOwner,
+	countAllItemsForOwner,
 	readAllItemsForType,
 	countAllItemsForType,
 	readItem,
@@ -55,6 +56,13 @@ const handlers = {
 	}, reply) {
 		reply(
 			readAllItemsForOwner({ owner })
+		)
+	},
+	countItemsForOwner({
+		pre: { owner }
+	}, reply) {
+		reply(
+			countAllItemsForOwner({ owner })
 		)
 	},
 	itemType({
@@ -120,6 +128,25 @@ module.exports = [
 				}
 			],
 			handler: handlers.itemsForOwner
+		}
+	},
+	{
+		method: 'GET',
+		path: ownerPathPrefix('/items/:count'),
+		config: {
+			pre: [
+				{
+					assign: 'owner',
+					method: handlers.owner
+				},
+				{
+					assign: 'count',
+					method: handlers.countItemsForOwner
+				}
+			],
+			handler({ pre: { count } }, reply) {
+				reply({ count })
+			}
 		}
 	},
 	{
@@ -219,10 +246,10 @@ module.exports = [
 			payload: { contentJSON, name, tags, }
 		}, reply) {
 			createItem({ owner, type, contentJSON, name, tags })
-			.then(({ id, type }) => {
-				reply({ id, type })
+			.then((item) => {
+				reply(item)
 				.code(201) // 201 Created
-				.location(`/@${ownerType}/${ownerID}/items/${type}/${id}`)
+				.location(`/@${ownerType}/${ownerID}/items/${item.type}/${item.id}`)
 			})
 			.catch(reply)
 		}

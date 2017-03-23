@@ -12,12 +12,14 @@ export function readWithID(id) {
   return fetchJSON(`/1/@organizations/1/items/stories/${id}`)
 }
 
+// Remove
 export function readWithHMAC(hmac) {
-  return fetchJSON(`/stories/256/${hmac}`)
+  return fetchJSON(`/1/stories/256/${hmac}`)
 }
 
+// Remove
 export function create({ contentJSON }) {
-  return postJSON(`/stories`, contentJSON)
+  return postJSON(`/1/stories`, contentJSON)
 }
 
 export function readInOrganization({ uuid, organizationID, authToken }) {

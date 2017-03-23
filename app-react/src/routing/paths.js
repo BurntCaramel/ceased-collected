@@ -1,11 +1,15 @@
 export function subpathToListOfType(type) {
 	switch (type) {
+		case 'journey':
+			return '/journies'
 		case 'collection':
 			return `/collections`
 		case 'story':
 			return `/stories`
 		case 'record':
 			return '/records'
+		default:
+			throw new Error(`subpathToListOfType(): Unknown type: ${type}`)
 	}
 }
 

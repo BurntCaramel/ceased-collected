@@ -1,5 +1,14 @@
 import api, { fetchJSON, postJSON, patchJSON } from './init'
 
+export function listItems({ owner }) {
+  return fetchJSON(`/1/@${owner.type}/${owner.id}/items`)
+}
+
+export function countItems({ owner }) {
+  return fetchJSON(`/1/@${owner.type}/${owner.id}/items/:count`)
+	.then(({ count }) => count)
+}
+
 export function listWithType({ owner, type }) {
   return fetchJSON(`/1/@${owner.type}/${owner.id}/items/type:${type}`)
 }

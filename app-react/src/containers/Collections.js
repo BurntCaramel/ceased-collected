@@ -4,7 +4,7 @@ import Link from '../components/Link'
 import Item from '../components/Item'
 import { pathTo } from '../routing/paths'
 import goTo from '../routing/goTo'
-import * as types from '../managers/types'
+import * as types from '../constants/itemTypes'
 
 const Collection = observer(function Collection({
 	id, owner, name, primary = false, storiesManager, recordsManager

@@ -5,7 +5,7 @@ import Item from '../components/Item'
 import StoryEditor from '../components/StoryEditor'
 import { pathTo } from '../routing/paths'
 import goTo from '../routing/goTo'
-import * as types from '../managers/types'
+import * as types from '../constants/itemTypes'
 
 const StorySummary = observer(function StorySummary({
 	owner,
