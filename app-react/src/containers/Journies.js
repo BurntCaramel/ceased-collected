@@ -95,7 +95,7 @@ const Child = observer(class Child extends React.Component {
 			<div style={{
 				marginBottom: '1rem'
 			}}>
-				<Row>
+				<Row wrap justifyContent='flex-end'>
 					<Field value={ name } grow={ 1 } onChange={ onChangeName } />
 					&nbsp;
 					<Button title='X' />

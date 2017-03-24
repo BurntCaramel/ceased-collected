@@ -1,5 +1,7 @@
 import React from 'react'
+import Row from './Row'
 import * as types from '../constants/itemTypes'
+import seeds from 'react-seeds'
 
 function renderOwnerType(type) {
 	switch (type) {
@@ -10,17 +12,25 @@ function renderOwnerType(type) {
 	}
 }
 
+const stylers = {
+	heading: seeds({
+		grow: 1
+	})
+}
+
 export default function OwnerNav({ owner, name, sectionTitle }) {
 	const { type, id } = owner
 	return (
 		<nav className='primary'>
-      <h2>
-				{
-					name || <span>{ renderOwnerType(type) } { id }</span>
-				}
-				{ sectionTitle && <span> · { sectionTitle }</span> }
-			</h2>
-			{ `#${type}` }
+			<Row>
+				<h2 { ...stylers.heading }>
+					{
+						name || <span>{ renderOwnerType(type) } { id }</span>
+					}
+					{ sectionTitle && <span> · { sectionTitle }</span> }
+				</h2>
+				{ `#${type}` }
+			</Row>
 		</nav>
 	)
 }
