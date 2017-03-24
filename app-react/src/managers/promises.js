@@ -67,6 +67,7 @@ export const makeCollectionLoader = (promises) => observable({
 
 	focusedID: null,
 	_focusedItem: null,
+	_focusedItemError: null,
 	get focusedItem() {
 		let item = this._focusedItem
 		if (item != null) {
@@ -81,9 +82,16 @@ export const makeCollectionLoader = (promises) => observable({
 		promises.item(idToFind)
 		.then(action(item => {
 			this._focusedItem = item
+			this._focusedItemError = null
+		}))
+		.catch(action(error => {
+			this._focusedItemError = error
 		}))
 
 		return null
+	},
+	get focusedItemError() {
+		return this._focusedItemError
 	},
 
 	alterItems: action.bound(function(alterer) {

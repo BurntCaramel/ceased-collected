@@ -43,6 +43,9 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 	get focusedItem() {
 		return this._itemsLoader.focusedItem
 	},
+	get focusedItemError() {
+		return this._itemsLoader.focusedItemError
+	},
 
 	get focusedItemOwner() {
 		const id = this.focusedID

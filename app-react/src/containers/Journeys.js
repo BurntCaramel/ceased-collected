@@ -150,6 +150,20 @@ const JourneyContent = observer(function JourneyContent({
 	)
 })
 
+function JourneyLoadError({ error }) {
+	if (error.response) {
+		if (error.response.status === 404) {
+			return <p>The journey does not exist</p>
+		}
+		else {
+			return <p>{ error.message }</p>
+		}
+	}
+	else {
+		return <p>{ error.message }</p>
+	}
+}
+
 export const Journey = observer(function Journey({
 	journey, owner, primary = false,
 	journeysManager
@@ -215,7 +229,7 @@ class Journeys extends React.Component {
 
 	render() {
 		const { journeysManager, owner } = this.props
-		const { focusedID, focusedItem } = journeysManager
+		const { focusedID, focusedItem, focusedItemError } = journeysManager
 		console.log('<Journeys> render focusedID', focusedID, this.props.itemID)
 		return (
 			focusedID == null ? (
@@ -229,18 +243,28 @@ class Journeys extends React.Component {
 				</div>
 			) : (
 				<div>
-					<OwnerNav
-						owner={{ type: types.journey, id: focusedID }}
-						name={ !!focusedItem ? focusedItem.name : 'Loading…' }
-					/>
 				{
-					!!focusedItem ? (
-						<JourneyContent
-							owner={ focusedItem }
-							childrenManager={ journeysManager.focusedItemChildrenManager }
-						/>
+					!!focusedItemError ? (
+						<div>
+							<OwnerNav
+								owner={{ type: types.journey, id: focusedID }}
+								name={ (focusedItemError.response && focusedItemError.response.status + '!') || focusedItemError.message }
+							/>
+							<JourneyLoadError error={ focusedItemError } />
+						</div>
 					) : (
-						null
+						<div>
+							<OwnerNav
+								owner={{ type: types.journey, id: focusedID }}
+								name={ !!focusedItem ? focusedItem.name : 'Loading…' }
+							/>
+							{ !!focusedItem &&
+								<JourneyContent
+									owner={ focusedItem }
+									childrenManager={ journeysManager.focusedItemChildrenManager }
+								/>
+							}
+						</div>
 					)
 				}
 				</div>
