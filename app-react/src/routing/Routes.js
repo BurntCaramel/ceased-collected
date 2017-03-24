@@ -3,11 +3,11 @@ import { observer } from 'mobx-react'
 import location from 'mobx-location'
 import * as types from '../constants/itemTypes'
 import { createStoriesObservable } from '../managers/stories'
-import { createJourniesObservable } from '../managers/journies'
+import { createJourneysObservable } from '../managers/journies'
 import { createCollectionsObservable } from '../managers/collections'
 import LandingPage from '../containers/LandingPage'
 import Stories from '../containers/Stories'
-import Journies, { Journey } from '../containers/Journies'
+import Journeys, { Journey } from '../containers/Journeys'
 import Collections from '../containers/Collections'
 import EditStory from '../containers/EditStory'
 import PreviewStory from '../containers/PreviewStory'
@@ -37,9 +37,9 @@ const ownerRoutes = {
 			/>
 		</div>
 	),
-	'journeys': ({ owner, journiesManager }, [ itemID ]) => (
-		<Journies
-			journiesManager={ journiesManager }
+	'journeys': ({ owner, journeysManager }, [ itemID ]) => (
+		<Journeys
+			journeysManager={ journeysManager }
 			owner={ owner }
 			itemID={ itemID }
 		/>
@@ -58,33 +58,6 @@ const ownerRoutes = {
 
 const routes = {
 	_: [
-		/*{
-			assign: 'isJourney',
-			method: (pathComponent) => pathComponent === 'journies',
-			routes: [
-				{
-					assign: ['owner', 'journiesManager'],
-					method: (id) => {
-						const owner = { type: types.journey, id }
-						return {
-							owner,
-							journiesManager: createJourniesObservable({ owner: null })
-						}
-					},
-					routes: ({ owner, journiesManager }, []) => (
-						<div>
-							<OwnerNav owner={ owner } />
-							{
-								<Journies
-									journiesManager={ journiesManager }
-									itemID={ owner.id }
-								/>
-							}
-						</div>
-					),
-				}
-			]
-		},*/
 		{
 			assign: 'isCollection',
 			method: (pathComponent) => pathComponent === 'collections',
@@ -104,7 +77,7 @@ const routes = {
 			]
 		},
 		{
-			assign: ['owner', 'collectionsManager', 'journiesManager', 'storiesManager'],
+			assign: ['owner', 'collectionsManager', 'journeysManager', 'storiesManager'],
 			method: (pathComponent) => {
 				if (pathComponent[0] === '@') {
 					const id = pathComponent.substring(1)
@@ -112,7 +85,7 @@ const routes = {
 					return {
 						owner,
 						storiesManager: createStoriesObservable({ owner }),
-						journiesManager: createJourniesObservable({ owner }),
+						journeysManager: createJourneysObservable({ owner }),
 						collectionsManager: createCollectionsObservable({ owner })
 					}
 				}

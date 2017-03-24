@@ -3,7 +3,7 @@ import * as types from '../constants/itemTypes'
 import { createItemsObservable } from './items'
 import { createChildrenObservable } from './children'
 
-export const createJourniesObservable = ({ owner }) => extendObservable(
+export const createJourneysObservable = ({ owner }) => extendObservable(
 	createItemsObservable({
 		owner,
 		type: types.journey,

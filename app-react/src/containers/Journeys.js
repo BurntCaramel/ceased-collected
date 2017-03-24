@@ -68,6 +68,10 @@ const Child = observer(class Child extends React.Component {
 			)
 		}
 
+		this.onDelete = () => {
+			this.props.onDelete(this.props.item)
+		}
+
 		this.disposeBodyReaction = reaction(
 			() => ({
 				name: this.stateManager.name,
@@ -98,7 +102,7 @@ const Child = observer(class Child extends React.Component {
 				<Row wrap justifyContent='flex-end'>
 					<Field value={ name } grow={ 1 } onChange={ onChangeName } />
 					&nbsp;
-					<Button title='X' />
+					<Button title='X' onClick={ this.onDelete } />
 					&nbsp;
 					<span
 						style={{
@@ -134,7 +138,8 @@ const JourneyContent = observer(function JourneyContent({
 						<Child key={ item.type + ':' + item.id }
 							owner={ owner }
 							item={ item }
-							onUpdate={ childrenManager.onUpdate }
+							onUpdate={ childrenManager.update }
+							onDelete={ childrenManager.delete }
 						/>
 					))
 				) : (
@@ -147,14 +152,14 @@ const JourneyContent = observer(function JourneyContent({
 
 export const Journey = observer(function Journey({
 	journey, owner, primary = false,
-	journiesManager
+	journeysManager
 }) {
 	return (
 		<Item owner={ owner } type={ types.journey } id={ journey.id } name={ journey.name } primary={ primary }>
 			{ primary &&
 				<JourneyContent
 					owner={ journey }
-					childrenManager={ journiesManager.focusedItemChildrenManager }
+					childrenManager={ journeysManager.focusedItemChildrenManager }
 				/>
 			}
 		</Item>
@@ -193,31 +198,31 @@ const JourniesList = observer(function JourniesList({
 
 class Journies extends React.Component {
 	componentWillMount() {
-		const { journiesManager, itemID } = this.props
+		const { journeysManager, itemID } = this.props
 		if (itemID != null) {
-			console.log('journiesManager.focusedID = ', itemID)
-			journiesManager.focusedID = itemID
+			console.log('journeysManager.focusedID = ', itemID)
+			journeysManager.focusedID = itemID
 		}
 	}
 
 	onNew = (event) => {
-		const { journiesManager } = this.props
-		journiesManager.createNew()
+		const { journeysManager } = this.props
+		journeysManager.createNew()
 		.then(item => {
 			goTo(pathTo([{ type: types.journey, id: item.id }]))
 		})
 	}
 
 	render() {
-		const { journiesManager, owner } = this.props
-		const { focusedID, focusedItem } = journiesManager
+		const { journeysManager, owner } = this.props
+		const { focusedID, focusedItem } = journeysManager
 		console.log('<Journies> render focusedID', focusedID, this.props.itemID)
 		return (
 			focusedID == null ? (
 				<div>
 					<OwnerNav owner={ owner } sectionTitle='Journeys' />
 					<JourniesList
-						journies={ journiesManager.journies }
+						journies={ journeysManager.journies }
 						owner={ owner }
 						onNew={ this.onNew }
 					/>
@@ -232,7 +237,7 @@ class Journies extends React.Component {
 					!!focusedItem ? (
 						<JourneyContent
 							owner={ focusedItem }
-							childrenManager={ journiesManager.focusedItemChildrenManager }
+							childrenManager={ journeysManager.focusedItemChildrenManager }
 						/>
 					) : (
 						null

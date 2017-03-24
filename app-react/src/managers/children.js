@@ -13,7 +13,8 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 			owner,
 			type,
 			id
-		})
+		}),
+		finder: ({ id }) => (item) => item.id === id
 	}),
 	get items() {
 		return this._itemsLoader.items
@@ -36,8 +37,25 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 		return this.itemStatus.get(id)
 	},
 
-	onUpdate: action.bound(function(changes, { id, type }) {
+	update: action.bound(function(changes, { id, type }) {
 		this.itemStatus.set(id, true)
+
+		// this._itemsLoader.findAndAlter(inputItem, (item) => {
+		// 	Object.assign(item, changes)
+		// })
+
+		// this._itemsLoader.alterItem((items, { find }) => {
+		// 	Object.assign(find(inputItem), changes)
+		// })
+
+		this._itemsLoader.alterItems((items) => {
+			const index = items.peek().findIndex(item => item.id === id)
+			if (index === -1) {
+				return
+			}
+
+			Object.assign(items[index], changes)
+		})
 
 		return itemsAPI.updateItem({
 			owner: this.owner,
@@ -69,7 +87,7 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 		})
 	}),
 
-	deleteWithID: action.bound(function({ id, type }) {
+	delete: action.bound(function({ id, type }) {
 		return itemsAPI.deleteItem({
 			owner: this.owner,
 			type,
@@ -84,17 +102,6 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 
 				items.splice(index, 1)
 			})
-		})
-	}),
-
-	changeNameOf: action.bound(function(name, { id, type }) {
-		this._itemsLoader.alterItems((items) => {
-			const index = items.peek().findIndex(item => item.id == id)
-			if (index === -1) {
-				return
-			}
-
-			items[index].name = name
 		})
 	})
 })
