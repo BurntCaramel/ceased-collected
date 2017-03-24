@@ -1,7 +1,7 @@
 export function subpathToListOfType(type) {
 	switch (type) {
 		case 'journey':
-			return '/journies'
+			return '/journeys'
 		case 'collection':
 			return `/collections`
 		case 'story':

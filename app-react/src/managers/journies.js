@@ -19,17 +19,17 @@ export const createJourneysObservable = ({ owner }) => extendObservable(
 			}
 
 			if (count === 0) {
-				return 'No journies yet'
+				return 'No journeys yet'
 			}
 			else if (count === 1) {
 				return '1 journey'
 			}
 			else {
-				return `${count} journies`
+				return `${count} journeys`
 			}
 		}
 	}), {
-		get journies() {
+		get journeys() {
 			return this.items
 		},
 

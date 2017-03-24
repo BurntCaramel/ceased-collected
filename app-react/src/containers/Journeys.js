@@ -166,8 +166,8 @@ export const Journey = observer(function Journey({
 	)
 })
 
-const JourniesList = observer(function JourniesList({
-	journies, owner, onNew
+const JourneysList = observer(function JourneysList({
+	journeys, owner, onNew
 }) {
 	return (
 		<div>
@@ -177,11 +177,11 @@ const JourniesList = observer(function JourniesList({
 				</button>
 			</section>
 		{
-			journies ? (
-				journies.length === 0 ? (
+			journeys ? (
+				journeys.length === 0 ? (
 					<p>{ '🐣 Hatch the first journey' }</p>
 				) : (
-					journies.map((journey, index) => (
+					journeys.map((journey, index) => (
 						<Journey key={ journey.id }
 							journey={ journey }
 							owner={ owner }
@@ -189,14 +189,14 @@ const JourniesList = observer(function JourniesList({
 					))
 				)
 			) : (
-				'Loading journies…'
+				'Loading journeys…'
 			)
 		}
 		</div>
 	)
 })
 
-class Journies extends React.Component {
+class Journeys extends React.Component {
 	componentWillMount() {
 		const { journeysManager, itemID } = this.props
 		if (itemID != null) {
@@ -216,13 +216,13 @@ class Journies extends React.Component {
 	render() {
 		const { journeysManager, owner } = this.props
 		const { focusedID, focusedItem } = journeysManager
-		console.log('<Journies> render focusedID', focusedID, this.props.itemID)
+		console.log('<Journeys> render focusedID', focusedID, this.props.itemID)
 		return (
 			focusedID == null ? (
 				<div>
 					<OwnerNav owner={ owner } sectionTitle='Journeys' />
-					<JourniesList
-						journies={ journeysManager.journies }
+					<JourneysList
+						journeys={ journeysManager.journeys }
 						owner={ owner }
 						onNew={ this.onNew }
 					/>
@@ -249,4 +249,4 @@ class Journies extends React.Component {
 	}
 }
 
-export default observer(Journies)
+export default observer(Journeys)
