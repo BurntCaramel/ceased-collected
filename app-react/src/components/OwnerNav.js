@@ -14,7 +14,8 @@ function renderOwnerType(type) {
 
 const stylers = {
 	heading: seeds({
-		grow: 1
+		grow: 1,
+		lineHeight: 1.2
 	})
 }
 
@@ -22,7 +23,7 @@ export default function OwnerNav({ owner, name, sectionTitle }) {
 	const { type, id } = owner
 	return (
 		<nav className='primary'>
-			<Row>
+			<Row alignItems='baseline'>
 				<h2 { ...stylers.heading }>
 					{
 						name || <span>{ renderOwnerType(type) } { id }</span>
