@@ -124,16 +124,5 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 				items.splice(index, 1)
 			})
 		})
-	}),
-
-	changeNameOf: action.bound(function(name, id) {
-		this._itemsLoader.alterItems((items) => {
-			const index = items.peek().findIndex(item => item.id == id)
-			if (index === -1) {
-				return
-			}
-
-			items[index].name = name
-		})
 	})
 })
