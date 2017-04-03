@@ -3,5 +3,5 @@ export default function goTo(to) {
 	window.history.pushState(state, null, to)
 	// Trigger event for mobx-location
 	const popStateEvent = new PopStateEvent('popstate', { state: state })
-	dispatchEvent(popStateEvent)
+	window.dispatchEvent(popStateEvent)
 }
