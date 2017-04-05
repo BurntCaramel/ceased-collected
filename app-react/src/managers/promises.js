@@ -41,12 +41,13 @@ export const makeLoader = (promise, defaultValue) => observable({
 	})
 })
 
-export const makeCollectionLoader = (promises) => observable({
+export const makeCollectionLoader = (options) => observable({
 	_hasLoaded: false,
 	_items: [],
+	_itemStatus: observable.map(),
 
 	get _promise() {
-		return promises.list({})
+		return options.list({})
 		.then(action(items => {
 			console.log('loaded items')
 			this._hasLoaded = true
@@ -79,7 +80,7 @@ export const makeCollectionLoader = (promises) => observable({
 			return
 		}
 
-		promises.item(idToFind)
+		options.item(idToFind)
 		.then(action(item => {
 			this._focusedItem = item
 			this._focusedItemError = null
@@ -95,19 +96,20 @@ export const makeCollectionLoader = (promises) => observable({
 	},
 
 	alterItems: action.bound(function(alterer) {
-		alterer(this._items)
+		const findIndex = (original) => this._items.peek().findIndex(options.finder(original))
+		alterer(this._items, { findIndex })
 	}),
 
-	alterItemWithID(id, alterer) {
-		this.alterItems(items => {
-			const index = items.peek().findIndex(item => item.id === id)
+	alterItem: action.bound(function(original, alterer) {
+		this.alterItems((items, { findIndex }) => {
+			const index = findIndex(original)
 			if (index === -1) {
 				return
 			}
 
-			alterer(items[index])
+			alterer(items[index], index)
 		})
-	},
+	}),
 
 	addItem: action.bound(function(itemToAdd) {
 		this.alterItems(items => {
@@ -121,6 +123,25 @@ export const makeCollectionLoader = (promises) => observable({
 				items.splice(index, 1, itemToAdd)
 			}
 		})
+	}),
+
+	updateItem: action.bound(function(original, changes) {
+		this._itemStatus.set(original.id, true)
+
+		this.alterItem(original, (item, index) => {
+			Object.assign(item, changes)
+		})
+
+		return options.update(original, changes)
+		.then(action(result => {
+			this._itemStatus.delete(original.id)
+
+			this.alterItem(original, (item, index) => {
+				Object.assign(item, result)
+			})
+
+			return result
+		}))
 	}),
 
 	removeWithID(id) {

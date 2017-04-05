@@ -14,17 +14,23 @@ const tabClasses = [
 	})
 ]
 
-const styles = seeds({
+const styler = ({ fullWidth = false }) => seeds({
 	row: true,
+	grow: fullWidth ? 1 : 0,
 	overflow: 'hidden',
 	border: { width: 1, style: 'solid', color: colors.action.normal },
+	//cornerRadius: fullWidth ? 0 : 5
 	cornerRadius: 5
 })
 
-export default function Tabs({ items, selectedID, onSelectID }) {
+export default function Tabs({
+	items, selectedID,
+	fullWidth,
+	onSelectID
+}) {
 	return (
 		<nav
-			{ ...styles }
+			{ ...styler({ fullWidth }) }
 		>
 		{
 			items.map(({ title, id }) => (

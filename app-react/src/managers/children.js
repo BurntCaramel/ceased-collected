@@ -14,7 +14,14 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 			type,
 			id
 		}),
-		finder: ({ id }) => (item) => item.id === id
+		// FIXME: requires item to have been loaded in
+		finder: ({ id }) => (item) => item.id === id,
+		update: ({ id, type }, changes) => itemsAPI.updateItem({
+			owner,
+			type,
+			id,
+			...changes
+		})
 	}),
 	get items() {
 		return this._itemsLoader.items
@@ -37,36 +44,8 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 		return this.itemStatus.get(id)
 	},
 
-	update: action.bound(function(changes, { id, type }) {
-		this.itemStatus.set(id, true)
-
-		// this._itemsLoader.findAndAlter(inputItem, (item) => {
-		// 	Object.assign(item, changes)
-		// })
-
-		// this._itemsLoader.alterItem((items, { find }) => {
-		// 	Object.assign(find(inputItem), changes)
-		// })
-
-		this._itemsLoader.alterItems((items) => {
-			const index = items.peek().findIndex(item => item.id === id)
-			if (index === -1) {
-				return
-			}
-
-			Object.assign(items[index], changes)
-		})
-
-		return itemsAPI.updateItem({
-			owner: this.owner,
-			type,
-			id,
-			...changes
-		})
-		.then(action((result) => {
-			this.itemStatus.delete(id)
-			return result
-		}))
+	update: action.bound(function(original, changes) {
+		return this._itemsLoader.updateItem(original, changes)
 	}),
 
 	// -> Promise<{ id }>
@@ -101,6 +80,19 @@ export const createChildrenObservable = ({ owner, makeNew, displayTextForCount }
 				}
 
 				items.splice(index, 1)
+			})
+		})
+	}),
+
+	move: action.bound(function({ oldIndex, newIndex }) {
+		console.log('MOVE', oldIndex, newIndex)
+		return Promise.resolve(true)
+		.then(() => {
+			this._itemsLoader.alterItems((items) => {
+				const movedItem = items[oldIndex]
+				items.splice(oldIndex, 1)
+				items.splice(newIndex, 0, movedItem)
+				// TODO: do network request
 			})
 		})
 	})

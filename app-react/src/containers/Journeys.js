@@ -1,7 +1,11 @@
 import React from 'react'
 import { observable, action, reaction } from 'mobx'
 import { observer } from 'mobx-react'
+import { parseElement } from 'lofi'
+import Screen from 'gateau/lib/screen/Screen'
+import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 import Row from '../components/Row'
+import Column from '../components/Column'
 import Item from '../components/Item'
 import Button from '../components/Button'
 import Tabs from '../components/Tabs'
@@ -20,6 +24,17 @@ const childTypeTabItems = [
 	{
 		title: 'Message',
 		id: types.message,
+	}
+]
+
+const sections = [
+	{
+		title: 'Edit',
+		id: 'edit'
+	},
+	{
+		title: 'Preview',
+		id: 'preview'
 	}
 ]
 
@@ -46,10 +61,10 @@ const Child = observer(class Child extends React.Component {
 			syncChanges: action.bound(function(performSync, item) {
 				console.log('Saving')
 				this.sendingSync = true
-				performSync({
+				performSync(item, {
 					name: this.name,
 					contentJSON: { body: this.body }
-				}, item)
+				})
 				.then(action(result => {
 					this.sendingSync = false
 					this.needsSync = false
@@ -100,18 +115,33 @@ const Child = observer(class Child extends React.Component {
 				marginBottom: '1rem'
 			}}>
 				<Row wrap justifyContent='flex-end'>
-					<Field value={ name } grow={ 1 } onChange={ onChangeName } />
-					&nbsp;
-					<Button title='X' onClick={ this.onDelete } />
-					&nbsp;
-					<span
-						style={{
-							opacity: needsSync ? 0.7 : 1.0
-						}}
-						onClick={ this.onSyncChanges }
-					>
-						{ '#' + item.type }
-					</span>
+					<Row details>
+						<summary>
+							<Field value={ name } grow={ 1 } onChange={ onChangeName } />
+							&nbsp;
+							<span
+								style={{
+									opacity: needsSync ? 0.7 : 1.0
+								}}
+								onClick={ this.onSyncChanges }
+							>
+								{ '#' + item.type }
+							</span>
+						</summary>
+						<Column.Start margin={{ top: '0.5rem', bottom: '0.5rem' }}>
+							<Button title='Delete' onClick={ this.onDelete } />
+							<div>
+								<small><time dateTime={ item.dateUpdated }>
+									Updated: { item.dateUpdated }
+								</time></small>
+							</div>
+							<div>
+								<small><time dateTime={ item.dateUpdated }>
+									Created: { item.dateCreated }
+								</time></small>
+							</div>
+						</Column.Start>
+					</Row>
 				</Row>
 				<Row>
 					<Field value={ body } grow={ 1 } rows={ 5 } onChange={ onChangeBody } />
@@ -121,16 +151,50 @@ const Child = observer(class Child extends React.Component {
 	}
 })
 
-const JourneyContent = observer(function JourneyContent({
+const JourneyReorderableItem = SortableElement(({ item }) =>
+  <div>
+		{ item.name }
+	</div>
+)
+
+const JourneyReorderableList = SortableContainer(({ items }) => (
+	<div>
+	{
+		items.map((item, index) => (
+			<JourneyReorderableItem key={ item.type + ':' + item.id }
+				index={ index }
+				item={ item }
+			/>
+		))
+	}
+	</div>
+))
+
+const EditJourneys = observer(function EditJourneys({
 	owner, childrenManager
 }) {
 	const { items } = childrenManager
 	return (
-		<div style={{ marginTop: '1rem' }}>
-			<Row marginBottom='1rem'>
+		<section style={{ marginTop: '1rem' }}>
+			<Row>
 				<Label title='Make new:'>
 					<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
 				</Label>
+			</Row>
+			<Row details marginBottom='1rem'>
+				<summary>Reorder</summary>
+				<div>
+				{
+					!!items ? (
+						<JourneyReorderableList
+							items={ items }
+							onSortEnd={ childrenManager.move }
+						/>
+					) : (
+						'Loading items…'
+					)
+				}
+				</div>
 			</Row>
 			{
 				!!items ? (
@@ -143,14 +207,45 @@ const JourneyContent = observer(function JourneyContent({
 						/>
 					))
 				) : (
-					'Loading items…'
+					<Row>Loading items…</Row>
 				)
 			}
-		</div>
+		</section>
 	)
 })
 
-function JourneyLoadError({ error }) {
+function parseScreenItem(item) {
+	return item.contentJSON.body.split('\n\n').map(section => section.split('\n').map(parseElement))
+}
+
+const PreviewJourneys = observer(function PreviewJourneys({
+	owner, childrenManager
+}) {
+	const { items } = childrenManager
+	return (
+		<section style={{ marginTop: '1rem' }}>
+			<div>
+			{
+				!!items ? (
+					items.map(item => (
+						<div style={{ display: 'inline-block', marginRight: '1rem' }}>
+							<Screen key={ item.type + ':' + item.id }
+								contentTree={ parseScreenItem(item) }
+								ingredients={ [] }
+								destinationID='bootstrap'
+							/>
+						</div>
+					))
+				) : (
+					<Row>Loading items…</Row>
+				)
+			}
+			</div>
+		</section>
+	)
+})
+
+function LoadErrorMessage({ error }) {
 	if (error.response) {
 		if (error.response.status === 404) {
 			return <p>The journey does not exist</p>
@@ -171,7 +266,7 @@ export const Journey = observer(function Journey({
 	return (
 		<Item owner={ owner } type={ types.journey } id={ journey.id } name={ journey.name } primary={ primary }>
 			{ primary &&
-				<JourneyContent
+				<EditJourneys
 					owner={ journey }
 					childrenManager={ journeysManager.focusedItemChildrenManager }
 				/>
@@ -180,16 +275,24 @@ export const Journey = observer(function Journey({
 	)
 })
 
+function JourneysActions({
+	onNew
+}) {
+	return (
+		<section>
+			<button onClick={ onNew }>
+				New journey
+			</button>
+		</section>
+	)
+}
+
 const JourneysList = observer(function JourneysList({
 	journeys, owner, onNew
 }) {
 	return (
 		<div>
-			<section>
-				<button onClick={ onNew }>
-					New journey
-				</button>
-			</section>
+			<JourneysActions onNew={ onNew } />
 		{
 			journeys ? (
 				journeys.length === 0 ? (
@@ -210,7 +313,30 @@ const JourneysList = observer(function JourneysList({
 	)
 })
 
+const SectionTabs = observer(function SectionTabs({
+	stateManager: {
+		sectionID,
+		onChangeSectionID
+	}
+}) {
+	return (
+		<Tabs
+			items={ sections }
+			selectedID={ sectionID }
+			fullWidth
+			onSelectID={ onChangeSectionID }
+		/>
+	)
+})
+
 class Journeys extends React.Component {
+	stateManager = observable({
+		sectionID: 'edit',
+		onChangeSectionID: action.bound(function(sectionID) {
+			this.sectionID = sectionID
+		})
+	})
+
 	componentWillMount() {
 		const { journeysManager, itemID } = this.props
 		if (itemID != null) {
@@ -230,6 +356,7 @@ class Journeys extends React.Component {
 	render() {
 		const { journeysManager, owner } = this.props
 		const { focusedID, focusedItem, focusedItemError } = journeysManager
+		const { sectionID } = this.stateManager
 		console.log('<Journeys> render focusedID', focusedID, this.props.itemID)
 		return (
 			focusedID == null ? (
@@ -250,7 +377,12 @@ class Journeys extends React.Component {
 								owner={{ type: types.journey, id: focusedID }}
 								name={ (focusedItemError.response && focusedItemError.response.status + '!') || focusedItemError.message }
 							/>
-							<JourneyLoadError error={ focusedItemError } />
+							<Row marginTop='1rem' marginBottom='1rem'>
+								<LoadErrorMessage error={ focusedItemError } />
+							</Row>
+							<Row>
+								<JourneysActions onNew={ this.onNew } />
+							</Row>
 						</div>
 					) : (
 						<div>
@@ -258,12 +390,22 @@ class Journeys extends React.Component {
 								owner={{ type: types.journey, id: focusedID }}
 								name={ !!focusedItem ? focusedItem.name : 'Loading…' }
 							/>
-							{ !!focusedItem &&
-								<JourneyContent
-									owner={ focusedItem }
-									childrenManager={ journeysManager.focusedItemChildrenManager }
-								/>
-							}
+							<Row justifyContent='center' marginTop='0.5rem'>
+								<SectionTabs stateManager={ this.stateManager } />
+							</Row>
+							{ !!focusedItem && (
+								sectionID === 'edit' ? (
+									<EditJourneys
+										owner={ focusedItem }
+										childrenManager={ journeysManager.focusedItemChildrenManager }
+									/>
+								) : (
+									<PreviewJourneys
+										owner={ focusedItem }
+										childrenManager={ journeysManager.focusedItemChildrenManager }
+									/>
+								)
+							) }
 						</div>
 					)
 				}

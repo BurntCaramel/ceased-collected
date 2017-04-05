@@ -160,3 +160,15 @@ a {
 	text-decoration: none;
 	color: inherit;
 }
+
+summary::-webkit-details-marker {
+	display: none;
+}
+details > summary:after {
+	display: inline-block;
+	margin-left: 0.5rem;
+	content: "···"
+}
+details[open] > summary:after {
+	content: "\25bc"
+}

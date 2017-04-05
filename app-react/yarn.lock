@@ -2409,9 +2409,9 @@ function-bind@^1.0.2:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.0.tgz#16176714c801798e4e8f2cf7f7529467bb4a5771"
 
-gateau@^0.2.9:
-  version "0.2.9"
-  resolved "https://registry.yarnpkg.com/gateau/-/gateau-0.2.9.tgz#d2ef1bbd13f5d3e1339d2b7ef2e8a1f6d1289a4d"
+gateau@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/gateau/-/gateau-0.3.0.tgz#8fafbc1282092964bb85e4a9aef53180b9447b87"
   dependencies:
     creed "^1.0.3"
     lodash "^4.14.1"
@@ -2785,7 +2785,7 @@ interpret@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.0.1.tgz#d579fb7f693b858004947af39fa0db49f795602c"
 
-invariant@^2.2.0:
+invariant@^2.2.0, invariant@^2.2.1:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/invariant/-/invariant-2.2.2.tgz#9e1f56ac0acdb6bf303306f338be3b204ae60360"
   dependencies:
@@ -3560,11 +3560,11 @@ lodash.uniq@^4.3.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-"lodash@>=3.5 <5", lodash@^4.0.0, lodash@^4.14.0, lodash@^4.14.1, lodash@^4.15.0, lodash@^4.16.2, lodash@^4.16.4, lodash@^4.2.0, lodash@^4.3.0:
+"lodash@>=3.5 <5", lodash@^4.0.0, lodash@^4.12.0, lodash@^4.14.0, lodash@^4.14.1, lodash@^4.15.0, lodash@^4.16.2, lodash@^4.16.4, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
-lofi@0.1.2:
+lofi@0.1.2, lofi@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/lofi/-/lofi-0.1.2.tgz#cb9b1f90848041cbdc3ef061c9902f7c0def4ea4"
   dependencies:
@@ -4700,6 +4700,14 @@ react-seeds@^0.4.0-b5:
     react "^15.2.1"
     react-dom "^15.2.1"
     react-sow "^0.3.0-b7"
+
+react-sortable-hoc@^0.6.1:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/react-sortable-hoc/-/react-sortable-hoc-0.6.1.tgz#921ffdfab7b3918164e02db61db3bd309a2b5df3"
+  dependencies:
+    babel-runtime "^6.11.6"
+    invariant "^2.2.1"
+    lodash "^4.12.0"
 
 react-sow@^0.3.0-b3, react-sow@^0.3.0-b4, react-sow@^0.3.0-b7:
   version "0.3.0-b7"
