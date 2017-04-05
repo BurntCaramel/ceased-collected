@@ -32,6 +32,10 @@ const sections = [
 		title: 'Edit',
 		id: 'edit'
 	},
+	// {
+	// 	title: 'Content',
+	// 	id: 'content'
+	// },
 	{
 		title: 'Preview',
 		id: 'preview'

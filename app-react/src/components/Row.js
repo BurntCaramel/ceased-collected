@@ -16,7 +16,7 @@ export default function Row({
 	section = false,
 	details = false,
 	wrap, alignItems, justifyContent,
-	grow = 1, marginTop, marginBottom
+	grow = 1, marginTop = 0, marginBottom = 0
 }) {
 	const Component = (
 		section ? (
