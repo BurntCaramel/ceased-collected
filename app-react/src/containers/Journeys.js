@@ -264,14 +264,16 @@ export const Journey = observer(function Journey({
 	journeysManager
 }) {
 	return (
-		<Item owner={ owner } type={ types.journey } id={ journey.id } name={ journey.name } primary={ primary }>
-			{ primary &&
-				<EditJourneys
-					owner={ journey }
-					childrenManager={ journeysManager.focusedItemChildrenManager }
-				/>
-			}
-		</Item>
+		<Row>
+			<Item owner={ owner } type={ types.journey } id={ journey.id } name={ journey.name } primary={ primary }>
+				{ primary &&
+					<EditJourneys
+						owner={ journey }
+						childrenManager={ journeysManager.focusedItemChildrenManager }
+					/>
+				}
+			</Item>
+		</Row>
 	)
 })
 
@@ -279,11 +281,13 @@ function JourneysActions({
 	onNew
 }) {
 	return (
-		<section>
-			<button onClick={ onNew }>
-				New journey
-			</button>
-		</section>
+		<Row>
+			<section>
+				<button onClick={ onNew }>
+					New journey
+				</button>
+			</section>
+		</Row>
 	)
 }
 
@@ -306,7 +310,7 @@ const JourneysList = observer(function JourneysList({
 					))
 				)
 			) : (
-				'Loading journeys…'
+				<Row>Loading journeys…</Row>
 			)
 		}
 		</div>

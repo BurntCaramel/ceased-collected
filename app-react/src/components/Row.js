@@ -13,12 +13,15 @@ const styler = ({ wrap, alignItems, justifyContent, grow, marginTop, marginBotto
 
 export default function Row({
 	children,
+	section = false,
 	details = false,
 	wrap, alignItems, justifyContent,
 	grow = 1, marginTop, marginBottom
 }) {
 	const Component = (
-		details ? (
+		section ? (
+			'section'
+		) : details ? (
 			'details'
 		) : 'div'
 	)

@@ -3,7 +3,7 @@ import Link from './Link'
 import { pathTo } from '../routing/paths'
 
 const renderStyle = ({ primary }) => ({
-	marginBottom: primary ? 0 : 16
+	//marginBottom: primary ? 0 : 16
 })
 
 export default function Item({
