@@ -14,6 +14,13 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 			owner,
 			type,
 			id
+		}),
+		finder: ({ id }) => (item) => item.id === id,
+		update: ({ id, type }, changes) => itemsAPI.updateItem({
+			owner,
+			type,
+			id,
+			...changes
 		})
 	}),
 	// get _itemsLoader() {

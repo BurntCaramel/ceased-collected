@@ -177,7 +177,7 @@ const EditJourneys = observer(function EditJourneys({
 	return (
 		<section style={{ marginTop: '1rem' }}>
 			<Row>
-				<Label title='Make new:'>
+				<Label title='New:'>
 					<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
 				</Label>
 			</Row>
@@ -353,6 +353,11 @@ class Journeys extends React.Component {
 		})
 	}
 
+	onRenameFocused = (newName) => {
+		const { journeysManager } = this.props
+		journeysManager._itemsLoader.updateFocusedItem({ name: newName })
+	}
+
 	render() {
 		const { journeysManager, owner } = this.props
 		const { focusedID, focusedItem, focusedItemError } = journeysManager
@@ -375,7 +380,7 @@ class Journeys extends React.Component {
 						<div>
 							<OwnerNav
 								owner={{ type: types.journey, id: focusedID }}
-								name={ (focusedItemError.response && focusedItemError.response.status + '!') || focusedItemError.message }
+								statusMessage={ (focusedItemError.response && focusedItemError.response.status + '!') || focusedItemError.message }
 							/>
 							<Row marginTop='1rem' marginBottom='1rem'>
 								<LoadErrorMessage error={ focusedItemError } />
@@ -388,7 +393,9 @@ class Journeys extends React.Component {
 						<div>
 							<OwnerNav
 								owner={{ type: types.journey, id: focusedID }}
-								name={ !!focusedItem ? focusedItem.name : 'Loading…' }
+								statusMessage={ !!focusedItem ? null : 'Loading…' }
+								name={ !!focusedItem ? focusedItem.name : null }
+								onChangeName={ this.onRenameFocused }
 							/>
 							<Row justifyContent='center' marginTop='0.5rem'>
 								<SectionTabs stateManager={ this.stateManager } />

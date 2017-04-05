@@ -75,12 +75,12 @@ export const makeCollectionLoader = (options) => observable({
 			return item
 		}
 		
-		const idToFind = this.focusedID
-		if (idToFind == null) {
+		const id = this.focusedID
+		if (id == null) {
 			return
 		}
 
-		options.item(idToFind)
+		options.item(id)
 		.then(action(item => {
 			this._focusedItem = item
 			this._focusedItemError = null
@@ -154,5 +154,15 @@ export const makeCollectionLoader = (options) => observable({
 			// Remove at index
 			items.splice(index, 1)
 		})
-	}
+	},
+
+	updateFocusedItem: action.bound(function(changes) {
+		const item = this.focusedItem
+		if (item == null) {
+			return
+		}
+
+		Object.assign(item, changes)
+		return this.updateItem(item, changes)
+	})
 })
