@@ -18,7 +18,9 @@
     "dynamodb-update-expression": "^0.1.19",
     "dyno": "^1.4.1",
     "hapi": "^16.1.0",
+    "hashids": "^1.1.1",
     "joi": "^10.2.0",
+    "lodash": "^4.17.4",
     "mobx": "^3.0.2",
     "ramda": "^0.23.0",
     "uuid": "^3.0.1"

@@ -1,7 +1,8 @@
 const Dyno = require('dyno')
 const R = require('ramda')
+const padStart = require('lodash/padStart')
 const { fromNode, runNode } = require('creed')
-const dynamodbUpdateExpression = require('dynamodb-update-expression');
+const dynamodbUpdateExpression = require('dynamodb-update-expression')
 const {
 	convertItemsToPutRequests,
 	readAllFrom
@@ -9,6 +10,10 @@ const {
 const {
 	incrementIDForType
 } = require('./ids')
+const {
+	userToDatabaseID,
+	databaseToUserID
+} = require('./convertIDs')
 
 const types = {
 	collection: 'collection',
@@ -23,15 +28,18 @@ const types = {
 
 const itemsTable = process.env.AWS_DYNAMODB_ITEMS_TABLE
 
-const uniqueIDForTypeAndID = (type, id) => `${type}:${id}`
+const padID = (id) => padStart(String(id), 20, '0')
+const uniqueIDForTypeAndID = (type, id) => `${ type }:${ padID(userToDatabaseID(id)) }`
 const uniqueIDForOwner = (owner) => uniqueIDForTypeAndID(owner.type, owner.id)
 
 const formatID = R.pipe(
 	R.split(':'),
-	R.last
+	R.last,
+	databaseToUserID
 )
 const formatReference = R.pipe(
 	R.split(':'),
+	R.adjust(databaseToUserID, 1),
 	R.zipObj(['type', 'id'])
 )
 const formatItem = R.converge(Object.assign, [
@@ -68,6 +76,7 @@ function readAllItemsForOwner({ owner }) {
 		ExpressionAttributeValues: {
 			':ownerID': uniqueIDForOwner(owner)
 		},
+		ScanIndexForward: true,
 		Pages: 1
 	})
 	.map(R.prop('Items'))
@@ -102,7 +111,7 @@ function readAllItemsForType({ owner, type }) {
 			':ownerID': uniqueIDForOwner(owner),
 			':type': `${type}:`
 		},
-		ScanIndexForward: false,
+		ScanIndexForward: true,
 		Pages: 1
 	})
 	.map(R.prop('Items'))
@@ -154,13 +163,15 @@ function createItem({ owner, type, tags = [], name = 'Untitled', contentJSON }) 
 				type,
 				tags,
 				name,
-				contentJSON: JSON.stringify(contentJSON)
+				contentJSON: JSON.stringify(contentJSON),
+				dateCreated: (new Date).toISOString()
 			}
 		})
 		.map(() => ({ owner, type, id, tags, name, contentJSON }))
 	})
 }
 
+// TODO: remove
 function updateNameForItem({ owner, type, id, newName }) {
 	return updateItem({
 		TableName: itemsTable,
@@ -180,6 +191,7 @@ function updateNameForItem({ owner, type, id, newName }) {
 	.map(R.prop('Attributes'))
 }
 
+// TODO: remove
 function updateTagsForItem({ owner, type, id, newTags }) {
 	return updateItem({
 		TableName: itemsTable,
@@ -205,7 +217,8 @@ function updateItemWithChanges({ owner, type, id, changes }) {
 		// 'Error: ExpressionAttributeValues must not be empty'
 		// https://forums.aws.amazon.com/thread.jspa?threadID=90137
 		changes = Object.assign({}, changes, {
-			contentJSON: JSON.stringify(changes.contentJSON)
+			contentJSON: JSON.stringify(changes.contentJSON),
+			dateUpdated: (new Date).toISOString()
 		})
 	}
 
@@ -229,7 +242,10 @@ function updateItemWithChanges({ owner, type, id, changes }) {
 		// 	':contentJSON': JSON.stringify(contentJSON)
 		// },
 	))
-	.map(R.prop('Attributes'))
+	.map(R.pipe(
+		R.prop('Attributes'),
+		formatItem
+	))
 	.catch(error => {
 		console.error(error)
 		throw error
