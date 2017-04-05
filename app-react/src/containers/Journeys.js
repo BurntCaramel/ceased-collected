@@ -343,8 +343,11 @@ class Journeys extends React.Component {
 
 	componentWillMount() {
 		const { journeysManager, itemID } = this.props
-		if (itemID != null) {
-			console.log('journeysManager.focusedID = ', itemID)
+		journeysManager.focusedID = itemID
+	}
+
+	componentWillReceiveProps({ journeysManager, itemID }) {
+		if (itemID !== this.props.itemID) {
 			journeysManager.focusedID = itemID
 		}
 	}
