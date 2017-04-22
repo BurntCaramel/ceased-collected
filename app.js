@@ -4,6 +4,7 @@ const Boom = require('boom')
 const isDev = (process.env.NODE_ENV === 'development')
 
 if (isDev) {
+	// Load environment variables from .env
 	require('dotenv').config()
 
 	process.on('uncaughtException', (error) => {
@@ -26,7 +27,6 @@ if (isDev) {
 
 server.register([
 	require('inert'),
-	//require('bell'),
 	require('hapi-auth-jwt2'),
 	{
 		register: require('crumb'),
@@ -41,51 +41,6 @@ server.register([
 	}
 ])
 .then(() => {
-	// From Auth0 authentication flow
-	// server.auth.strategy('bell-auth0', 'bell', {
-	// 	provider: 'auth0',
-	// 	location: 'http://localhost:7000',
-	// 	password: process.env.AUTH_COOKIE_PASSWORD,
-	// 	clientId: process.env.AUTH0_CLIENT_ID,
-	// 	clientSecret: process.env.AUTH0_CLIENT_SECRET,
-	// 	cookie: 'bell-auth0',
-  //   isSecure: !isDev,
-  //   forceHttps: !isDev,
-  //   isHttpOnly: true,
-	// 	config: {
-	// 		domain: process.env.AUTH0_DOMAIN,
-	// 	}
-	// })
-	// Auth0 callback cookie
-  // server.state('bell-auth0', {
-  //   ttl: null,
-  //   isSecure: !isDev,
-  //   isHttpOnly: true,
-  //   isSameSite: 'Strict',
-  //   path: '/',
-  //   encoding: 'iron',
-  //   password: process.env.AUTH_COOKIE_PASSWORD
-  // })
-	// server.route({
-	// 	method: ['GET', 'POST'],
-	// 	path: '/auth0/callback/cookie',
-	// 	config: {
-	// 		auth: {
-	// 			strategy: 'bell-auth0',
-	// 			mode: 'try'
-	// 		},
-	// 		handler(request, reply) {
-	// 			if (request.auth.isAuthenticated) {
-	// 				//reply({ success: true, auth: request.auth })
-	// 				reply().redirect('/')
-	// 			}
-	// 			else {
-	// 				reply(request.auth.error)
-	// 			}
-	// 		}
-	// 	}
-	// })
-
 	server.auth.strategy('auth0-jwt', 'jwt', {
 		key: process.env.AUTH0_CLIENT_SECRET,
 		validateFunc(decoded, request, callback) {
@@ -114,6 +69,7 @@ server.register([
 			}
 		},
 		{
+			// favicon
 			method: 'GET',
 			path: '/favicon.ico',
 			config: { auth: false },
@@ -122,6 +78,7 @@ server.register([
 			}
 		},
 		{
+			// static
 			method: 'GET',
 			path: '/static/{param*}',
 			config: { auth: false },
@@ -132,6 +89,7 @@ server.register([
 			}
 		},
 		{
+			// catch-all for index.html
 			method: 'GET',
 			path: '/{param*}',
 			config: { auth: false },
