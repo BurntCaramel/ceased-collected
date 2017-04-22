@@ -1,4 +1,4 @@
-import api, { fetchJSON, postJSON, patchJSON } from './init'
+import { fetchJSON, postJSON, patchJSON, sendDelete } from './init'
 
 export function listItems({ owner }) {
   return fetchJSON(`/1/@${owner.type}/${owner.id}/items`)
@@ -44,5 +44,5 @@ export function updateItem({ owner, type, id, contentJSON, name, previewDestinat
 }
 
 export function deleteItem({ owner, type, id }) {
-  return api.delete(`/1/@${owner.type}/${owner.id}/items/type:${type}/${id}`)
+  return sendDelete(`/1/@${owner.type}/${owner.id}/items/type:${type}/${id}`)
 }

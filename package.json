@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "node app.js",
+    "build": "yarn run build:react",
     "start:dev": "PORT=3010 node -r dotenv/config app.js",
     "start:react": "cd app-react && yarn start",
     "build:react": "cd app-react && yarn run build",
@@ -12,8 +13,11 @@
     "node": ">= 7.6.0"
   },
   "dependencies": {
+    "bell": "^8.6.0",
     "boom": "^4.2.0",
+    "crumb": "^6.0.3",
     "hapi": "^16.1.0",
+    "hapi-auth-jwt2": "^7.2.4",
     "inert": "^4.1.0",
     "react-seeds": "^0.4.0",
     "react-sow": "^0.3.0-b7"

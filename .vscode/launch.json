@@ -8,7 +8,8 @@
             "name": "Launch Program",
             "type": "node2",
             "request": "launch",
-            "program": "${workspaceRoot}/api/app.js",
+						"program": "${workspaceRoot}/app.js",
+            "program2": "${workspaceRoot}/api/app.js",
             "cwd": "${workspaceRoot}",
             "env": {
               "NODE_ENV": "development",

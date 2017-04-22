@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import { addHandlers } from 'react-ramda'
-import Cookie from 'cookie'
-import decodeJWT from 'jwt-decode'
 import * as storiesAPI from './api/stories'
 import * as eventsAPI from './api/events'
 import StoryEditor from './components/StoryEditor'
@@ -16,19 +14,8 @@ const eventListRenderers = [
 	started => started ? 'Loading events…' : null
 ]
 
-function readAuthToken() {
-	const cookies = Cookie.parse(document.cookie)
-	try {
-		return decodeJWT(cookies['auth-token'])
-	}
-	catch (error) {
-		return null
-	}
-}
-
 class App extends Component {
 	state = {
-		authToken: readAuthToken(),
 		listExpanded: false,
 		storyHMAC: null
 	}

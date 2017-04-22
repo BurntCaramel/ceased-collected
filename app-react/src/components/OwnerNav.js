@@ -16,7 +16,9 @@ function renderOwnerType(type) {
 
 const stylers = {
 	heading: seeds({
+		row: 1,
 		grow: 1,
+		margin: { right: '0.5rem' },
 		lineHeight: 1.2
 	})
 }
@@ -32,7 +34,13 @@ function NameEditor({
 	value,
 	onChange, onKeyDown
 }) {
-	return <Field value={ value } font={{ family: 'inherit', size: 'inherit' }} onChange={ onChange } onKeyDown={ onKeyDown } />
+	return <Field
+		value={ value }
+		grow={ 1 }
+		font={{ family: 'inherit', size: 'inherit' }}
+		onChange={ onChange }
+		onKeyDown={ onKeyDown }
+	/>
 }
 
 export default function OwnerNav({
