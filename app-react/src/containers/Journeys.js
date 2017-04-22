@@ -29,16 +29,20 @@ const childTypeTabItems = [
 
 const sections = [
 	{
-		title: 'Edit',
-		id: 'edit'
+		title: 'Low fidelity',
+		id: 'lofi'
 	},
 	// {
 	// 	title: 'Content',
 	// 	id: 'content'
 	// },
 	{
-		title: 'Preview',
-		id: 'preview'
+		title: 'Interact',
+		id: 'interact'
+	},
+	{
+		title: 'High fidelity',
+		id: 'hifi'
 	}
 ]
 
@@ -339,7 +343,7 @@ const SectionTabs = observer(function SectionTabs({
 
 class Journeys extends React.Component {
 	stateManager = observable({
-		sectionID: 'edit',
+		sectionID: 'lofi',
 		onChangeSectionID: action.bound(function(sectionID) {
 			this.sectionID = sectionID
 		})
@@ -412,7 +416,7 @@ class Journeys extends React.Component {
 								<SectionTabs stateManager={ this.stateManager } />
 							</Row>
 							{ !!focusedItem && (
-								sectionID === 'edit' ? (
+								sectionID === 'lofi' ? (
 									<EditJourneys
 										owner={ focusedItem }
 										childrenManager={ journeysManager.focusedItemChildrenManager }
