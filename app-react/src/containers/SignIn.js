@@ -1,5 +1,6 @@
 import React from 'react'
 import Auth0LockPasswordless from 'auth0-lock-passwordless'
+import Row from '../components/Row'
 import Button from '../components/Button'
 import { setAuthToken } from '../api'
 
@@ -50,13 +51,22 @@ export default class SignIn extends React.PureComponent {
 		return (
 			<div>
 				<header>
-					<h1>{ 'Get feedback sooner with rapid prototyping' }</h1>
+					<h1>{ 'Design from content to polish' }</h1>
 				</header>
 				<section>
 					{ error && (
-						<p>Error signing in: { error } { errorDescription }</p>
+						<Row>
+							<p>Error signing in: { error } { errorDescription }</p>
+						</Row>
 					) }
-					<Button title='Sign In' onClick={ this.onSignIn } />
+					<Row justifyContent='center'>
+						<Button
+							title='Join / Sign In'
+							primary
+							large
+							onClick={ this.onSignIn }
+						/>
+					</Row>
 				</section>
 			</div>
 		)

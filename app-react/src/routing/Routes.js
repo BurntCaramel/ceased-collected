@@ -46,14 +46,11 @@ const ownerRoutes = {
 		/>
 	),
 	'collections': ({ owner, collectionsManager }, [ itemID ]) => (
-		<div>
-			<OwnerNav owner={ owner } sectionTitle='Collections' />
-			<Collections
-				collectionsManager={ collectionsManager }
-				owner={ owner }
-				itemID={ itemID }
-			/>
-		</div>
+		<Collections
+			collectionsManager={ collectionsManager }
+			owner={ owner }
+			itemID={ itemID }
+		/>
 	)
 }
 

@@ -3,20 +3,31 @@ import { findDOMNode } from 'react-dom'
 import seeds from 'react-seeds'
 import Label from './Label'
 import * as colors from './colors'
+import * as visualStylers from './visualStylers'
 
 const defaultFont = { size: '1rem' }
 
 const stylers = {
-	input: ({ hasTitle, grow, width, font = defaultFont }) => seeds({
+	input: ({
+		hasTitle,
 		grow,
+		rows,
 		width,
-		margin: { left: hasTitle ? '0.5em' : null },
-		font,
-		text: { lineHeight: '1.3rem', color: colors.action.normal },
-		padding: { left: '0.25em' },
-		background: { color: colors.lightness.normal },
-		border: { color: colors.action.normal, width: 1, style: 'solid' },
-		cornerRadius: 2
+		font = defaultFont,
+		transparent = false
+	}) => ({
+		style: {
+			...seeds({
+				grow,
+				width,
+				margin: { left: hasTitle ? '0.5em' : null },
+				font,
+				text: { lineHeight: '1.3rem', color: colors.action.normal },
+				padding: { base: rows > 1 ? '0.25em' : '0.125em', left: '0.25em', right: 0 },
+				cornerRadius: 2
+			}).style,
+			...(transparent ? visualStylers.transparent.style : visualStylers.field.style)
+		}
 	})
 }
 
@@ -50,7 +61,7 @@ export default class Field extends React.PureComponent {
 	}
 
 	render() {
-		const { value, title, grow, width, font, rows = 1, onChange, onKeyDown } = this.props
+		const { value, title, grow, width, font, rows = 1, transparent, onChange, onKeyDown } = this.props
 		const Component = rows === 1 ? 'input' : 'textarea'
 		const hasTitle = (title != null)
 		const input = (
@@ -63,8 +74,10 @@ export default class Field extends React.PureComponent {
 				{ ...stylers.input({
 					hasTitle,
 					grow,
+					rows,
 					width,
-					font
+					font,
+					transparent
 				}) }
 			/>
 		)

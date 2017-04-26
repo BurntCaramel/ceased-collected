@@ -37,7 +37,7 @@ export default function Tabs({
 				<Button key={ id }
 					tab
 					title={ title }
-					selected={ selectedID === id }
+					primary={ selectedID === id }
 					classes={ tabClasses }
 					onClick={ !!onSelectID ? onSelectID.bind(null, id) : null }
 				/>

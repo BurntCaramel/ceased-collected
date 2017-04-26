@@ -1,8 +1,6 @@
 import React from 'react'
 import { observable, action, reaction } from 'mobx'
 import { observer } from 'mobx-react'
-import { parseElement } from 'lofi'
-import Screen from 'gateau/lib/screen/Screen'
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc'
 import Row from '../components/Row'
 import Column from '../components/Column'
@@ -12,24 +10,29 @@ import Tabs from '../components/Tabs'
 import Field from '../components/Field'
 import Label from '../components/Label'
 import OwnerNav from '../components/OwnerNav'
+import APIErrorMessage from '../components/APIErrorMessage'
+import Child from './ItemEditor'
 import { pathTo } from '../routing/paths'
 import goTo from '../routing/goTo'
 import * as types from '../constants/itemTypes'
+import * as PreviewTypes from './PreviewTypes'
+import ScreensPreview from './ScreensPreview'
 
 const childTypeTabItems = [
 	{
-		title: 'Screen',
+		title: '+ Screen',
 		id: types.screen,
 	},
 	{
-		title: 'Message',
+		title: '+ Message',
 		id: types.message,
 	}
 ]
 
 const sections = [
 	{
-		title: 'Low fidelity',
+		//title: 'Low fidelity',
+		title: 'Low',
 		id: 'lofi'
 	},
 	// {
@@ -37,127 +40,15 @@ const sections = [
 	// 	id: 'content'
 	// },
 	{
-		title: 'Interact',
+		title: 'Interactive',
 		id: 'interact'
 	},
 	{
-		title: 'High fidelity',
+		//title: 'High fidelity',
+		title: 'High',
 		id: 'hifi'
 	}
 ]
-
-const Child = observer(class Child extends React.Component {
-	constructor(props) {
-		super(props)
-
-		this.stateManager = observable({
-			name: props.item.name,
-			body: props.item.contentJSON.body,
-			needsSync: false,
-			sendingSync: false,
-
-			onChangeName: action.bound(function({ target: { value } }) {
-				this.name = value
-				this.needsSync = true
-			}),
-
-			onChangeBody: action.bound(function({ target: { value } }) {
-				this.body = value
-				this.needsSync = true
-			}),
-
-			syncChanges: action.bound(function(performSync, item) {
-				console.log('Saving')
-				this.sendingSync = true
-				performSync(item, {
-					name: this.name,
-					contentJSON: { body: this.body }
-				})
-				.then(action(result => {
-					this.sendingSync = false
-					this.needsSync = false
-					// Update with latest from API
-					// FIXME: merge
-					//this.body = result.contentJSON.body
-					console.log('Saved', result)
-				}))
-			})
-		})
-
-		this.onSyncChanges = () => {
-			this.stateManager.syncChanges(
-				this.props.onUpdate,
-				this.props.item
-			)
-		}
-
-		this.onDelete = () => {
-			this.props.onDelete(this.props.item)
-		}
-
-		this.disposeBodyReaction = reaction(
-			() => ({
-				name: this.stateManager.name,
-				body: this.stateManager.body
-			}),
-			({ name, body }) => {
-				this.onSyncChanges()
-			}, {
-				delay: 2000,
-				compareStructural: true,
-				name: `Journey Child ${props.type} ${props.id}`
-			}
-		)
-	}
-
-	componentWillUnmount() {
-		this.disposeBodyReaction()
-		this.disposeBodyReaction = null
-	}
-
-	render() {
-		const { item, owner } = this.props
-		const { name, body, needsSync, sendingSync, onChangeName, onChangeBody } = this.stateManager
-		return (
-			<div style={{
-				marginBottom: '1rem'
-			}}>
-				<Row wrap justifyContent='flex-end'>
-					<Row details>
-						<summary>
-							<Field value={ name } grow={ 1 } onChange={ onChangeName } />
-							&nbsp;
-							<span
-								style={{
-									opacity: needsSync ? 0.7 : 1.0
-								}}
-								onClick={ this.onSyncChanges }
-							>
-								{ '#' + item.type }
-							</span>
-						</summary>
-						<Column.Start margin={{ top: '0.5rem', bottom: '0.5rem' }}>
-							<Button title='Delete' onClick={ this.onDelete } />
-							<div>
-								<small><time dateTime={ item.dateUpdated }>
-									Updated: { item.dateUpdated }
-								</time></small>
-							</div>
-							<div>
-								<small><time dateTime={ item.dateUpdated }>
-									Created: { item.dateCreated }
-								</time></small>
-							</div>
-						</Column.Start>
-					</Row>
-				</Row>
-				<Row>
-					<Field value={ body } grow={ 1 } rows={ 5 } onChange={ onChangeBody } />
-				</Row>
-			</div>
-		)
-	}
-})
 
 const JourneyReorderableItem = SortableElement(({ item }) =>
   <div>
@@ -184,13 +75,11 @@ const EditJourneys = observer(function EditJourneys({
 	const { items } = childrenManager
 	return (
 		<section style={{ marginTop: '1rem' }}>
-			<Row>
-				<Label title='New:'>
-					<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
-				</Label>
+			<Row justifyContent='center'>
+				<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
 			</Row>
-			<Row details marginBottom='1rem'>
-				<summary>Reorder</summary>
+			<Row details marginBottom='1rem' text={{ align: 'center' }}>
+				<summary />
 				<div>
 				{
 					!!items ? (
@@ -221,51 +110,6 @@ const EditJourneys = observer(function EditJourneys({
 		</section>
 	)
 })
-
-function parseScreenItem(item) {
-	return item.contentJSON.body.split('\n\n').map(section => section.split('\n').map(parseElement))
-}
-
-const PreviewJourneys = observer(function PreviewJourneys({
-	owner, childrenManager
-}) {
-	const { items } = childrenManager
-	return (
-		<section style={{ marginTop: '1rem' }}>
-			<div>
-			{
-				!!items ? (
-					items.map(item => (
-						<div style={{ display: 'inline-block', marginRight: '1rem' }}>
-							<Screen key={ item.type + ':' + item.id }
-								contentTree={ parseScreenItem(item) }
-								ingredients={ [] }
-								destinationID='bootstrap'
-							/>
-						</div>
-					))
-				) : (
-					<Row>Loading items…</Row>
-				)
-			}
-			</div>
-		</section>
-	)
-})
-
-function LoadErrorMessage({ error }) {
-	if (error.response) {
-		if (error.response.status === 404) {
-			return <p>The journey does not exist</p>
-		}
-		else {
-			return <p>{ error.message }</p>
-		}
-	}
-	else {
-		return <p>{ error.message }</p>
-	}
-}
 
 export const Journey = observer(function Journey({
 	journey, owner, primary = false,
@@ -346,6 +190,11 @@ class Journeys extends React.Component {
 		sectionID: 'lofi',
 		onChangeSectionID: action.bound(function(sectionID) {
 			this.sectionID = sectionID
+		}),
+
+		previewType: PreviewTypes.initial,
+		onChangePreviewType: action.bound(function(previewType) {
+			this.previewType = previewType
 		})
 	})
 
@@ -375,11 +224,13 @@ class Journeys extends React.Component {
 
 	render() {
 		const { journeysManager, owner } = this.props
-		const { focusedID, focusedItem, focusedItemError } = journeysManager
+		const { error, focusedID, focusedItem, focusedItemError } = journeysManager
 		const { sectionID } = this.stateManager
 		console.log('<Journeys> render focusedID', focusedID, this.props.itemID)
 		return (
-			focusedID == null ? (
+			error != null ? (
+				<APIErrorMessage error={ error } />
+			) : focusedID == null ? (
 				<div>
 					<OwnerNav owner={ owner } sectionTitle='Journeys' />
 					<JourneysList
@@ -398,7 +249,7 @@ class Journeys extends React.Component {
 								statusMessage={ (focusedItemError.response && focusedItemError.response.status + '!') || focusedItemError.message }
 							/>
 							<Row marginTop='1rem' marginBottom='1rem'>
-								<LoadErrorMessage error={ focusedItemError } />
+								<APIErrorMessage error={ focusedItemError } />
 							</Row>
 							<Row>
 								<JourneysActions onNew={ this.onNew } />
@@ -422,8 +273,9 @@ class Journeys extends React.Component {
 										childrenManager={ journeysManager.focusedItemChildrenManager }
 									/>
 								) : (
-									<PreviewJourneys
+									<ScreensPreview
 										owner={ focusedItem }
+										stateManager={ this.stateManager }
 										childrenManager={ journeysManager.focusedItemChildrenManager }
 									/>
 								)

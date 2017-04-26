@@ -3,6 +3,7 @@ import * as types from '../constants/itemTypes'
 import { createStoriesObservable } from './stories'
 import { createRecordsObservable } from './records'
 import { createItemsObservable } from './items'
+import { createChildrenObservable } from './children'
 
 export const createCollectionsObservable = ({ owner }) => extendObservable(
 	createItemsObservable({
@@ -11,7 +12,7 @@ export const createCollectionsObservable = ({ owner }) => extendObservable(
 		makeNew() {
 			return {
 				contentJSON: { body: '' },
-				name: 'Untitled'
+				name: 'Untitled collection'
 			}
 		},
 		displayTextForCount(count) {
@@ -29,6 +30,22 @@ export const createCollectionsObservable = ({ owner }) => extendObservable(
 	}), {
 		get collections() {
 			return this.items
+		},
+
+		get focusedItemChildrenManager() {
+			const owner = this.focusedItemOwner
+			if (owner == null) {
+				return
+			}
+			return createChildrenObservable({
+				owner,
+				makeNew: (type) => ({
+					type,
+					contentJSON: {
+						body: ''
+					}
+				})
+			})
 		},
 
 		get focusedItemStoriesManager() {

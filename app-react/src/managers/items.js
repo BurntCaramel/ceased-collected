@@ -41,6 +41,10 @@ export const createItemsObservable = ({ owner, type, makeNew, displayTextForCoun
 		return !!this.owner && this._itemsLoader.items
 	},
 
+	get error() {
+		return !!this.owner && this._itemsLoader.error
+	},
+
 	get focusedID() {
 		return this._itemsLoader.focusedID
 	},

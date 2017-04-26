@@ -45,6 +45,7 @@ export const makeCollectionLoader = (options) => observable({
 	_hasLoaded: false,
 	_items: [],
 	_itemStatus: observable.map(),
+	_error: observable.box(null),
 
 	get _promise() {
 		return options.list({})
@@ -52,6 +53,10 @@ export const makeCollectionLoader = (options) => observable({
 			console.log('loaded items')
 			this._hasLoaded = true
 			this._items.replace(items)
+			this._error.set(null)
+		}))
+		.catch(action(error => {
+			this._error.set(error)
 		}))
 	},
 
@@ -64,6 +69,10 @@ export const makeCollectionLoader = (options) => observable({
 		else {
 			return null
 		}
+	},
+
+	get error() {
+		return this._error.get()
 	},
 
 	focusedID: null,

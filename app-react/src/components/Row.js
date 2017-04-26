@@ -1,14 +1,23 @@
 import React from 'react'
 import seeds from 'react-seeds'
 
-const styler = ({ wrap, alignItems, justifyContent, grow, marginTop, marginBottom }) => seeds({
+const styler = ({
+	wrap,
+	alignItems,
+	justifyContent,
+	grow,
+	marginTop,
+	marginBottom,
+	text
+}) => seeds({
 	row: true,
 	wrap,
 	alignItems,
 	justifyContent,
 	maxWidth: '38rem',
 	grow,
-	margin: { left: 'auto', right: 'auto', top: marginTop, bottom: marginBottom }
+	margin: { left: 'auto', right: 'auto', top: marginTop, bottom: marginBottom },
+	text
 })
 
 export default function Row({
@@ -16,7 +25,8 @@ export default function Row({
 	section = false,
 	details = false,
 	wrap, alignItems, justifyContent,
-	grow = 1, marginTop = 0, marginBottom = 0
+	grow = 1, marginTop = 0, marginBottom = 0,
+	text
 }) {
 	const Component = (
 		section ? (
@@ -28,7 +38,15 @@ export default function Row({
 	return (
 		<Component
 			children={ children }
-			{ ...styler({ wrap, alignItems, justifyContent, marginTop, marginBottom, grow }) }
+			{...styler({
+					wrap,
+					alignItems,
+					justifyContent,
+					marginTop,
+					marginBottom,
+					grow,
+					text
+			})}
 		/>
 	)
 }

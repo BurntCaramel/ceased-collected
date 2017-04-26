@@ -8,6 +8,18 @@ export default class TapToEdit extends React.PureComponent {
 		editedValue: null
 	}
 
+	commit(value) {
+		this.setState({ editing: false })
+		this.props.onCommitValue(value)
+	}
+
+	discard() {
+		this.setState({
+			editing: false,
+			editedValue: null
+		})
+	}
+
 	onEdit = () => {
 		this.setState({
 			editing: true,
@@ -21,15 +33,15 @@ export default class TapToEdit extends React.PureComponent {
 
 	onKeyDown = ({ keyCode, target: { value } }) => {
 		if (keyCode === 13) { // Enter
-			this.setState({ editing: false })
-			this.props.onCommitValue(value)
+			this.commit(value)
 		}
 		else if (keyCode === 27) { // Escape
-			this.setState({
-				editing: false,
-				editedValue: null
-			})
+			this.discard()
 		}
+	}
+
+	onBlur = ({ target: { value } }) => {
+		this.commit(value)
 	}
 
 	render() {
@@ -38,7 +50,7 @@ export default class TapToEdit extends React.PureComponent {
 
 		return (
 			editing ? (
-				<Editor value={ editedValue } onChange={ this.onChange } onKeyDown={ this.onKeyDown } />
+				<Editor value={ editedValue } onChange={ this.onChange } onKeyDown={ this.onKeyDown } onBlur={ this.onBlur } />
 			) : (
 				<Normal value={ value } onEdit={ this.onEdit } />
 			)

@@ -9,7 +9,7 @@ function renderOwnerType(type) {
 	switch (type) {
 	case types.journey: return 'Journey'
 	case types.collection: return 'Collection'
-	case types.organization: return 'Organization'
+	case types.organization: return 'Org'
 	default: return type
 	}
 }
@@ -19,6 +19,7 @@ const stylers = {
 		row: 1,
 		grow: 1,
 		margin: { right: '0.5rem' },
+		font: { size: '1rem', weight: 700 },
 		lineHeight: 1.2
 	})
 }
@@ -32,7 +33,7 @@ function NameNormal({
 
 function NameEditor({
 	value,
-	onChange, onKeyDown
+	onChange, onKeyDown, onBlur
 }) {
 	return <Field
 		value={ value }
@@ -40,6 +41,7 @@ function NameEditor({
 		font={{ family: 'inherit', size: 'inherit' }}
 		onChange={ onChange }
 		onKeyDown={ onKeyDown }
+		onBlur={ onBlur }
 	/>
 }
 
@@ -68,7 +70,7 @@ export default function OwnerNav({
 					}
 					{ sectionTitle && <span> · { sectionTitle }</span> }
 				</h2>
-				<span>#{type}</span>
+				<small>#{type}</small>
 			</Row>
 		</nav>
 	)
