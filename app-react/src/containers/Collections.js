@@ -18,9 +18,9 @@ import * as types from '../constants/itemTypes'
 import * as PreviewTypes from './PreviewTypes'
 import ScreensPreview from './ScreensPreview'
 
-const childTypeTabItems = [
+const childTypeItemsA = [
 	{
-		title: '+ Copy',
+		title: '+ Microcopy',
 		//id: types.copy,
 		id: 'copy'
 	},
@@ -30,9 +30,26 @@ const childTypeTabItems = [
 		id: 'record',
 	},
 	{
+		title: '+ Model',
+		//id: types.component,
+		id: 'model',
+	}
+]
+
+const childTypeItemsB = [
+	{
 		title: '+ Component',
 		//id: types.component,
 		id: 'component',
+	},
+	// {
+	// 	title: '+ Icon',
+	// 	id: 'icon',
+	// },
+	{
+		title: '+ Picture',
+		//id: types.component,
+		id: 'picture',
 	}
 ]
 
@@ -80,8 +97,9 @@ const EditCollections = observer(function EditCollections({
 	const { items } = childrenManager
 	return (
 		<section style={{ marginTop: '1rem' }}>
-			<Row justifyContent='center'>
-				<Tabs items={ childTypeTabItems } onSelectID={ childrenManager.createNewWithType } />
+			<Row wrap justifyContent='center'>
+				<Tabs items={ childTypeItemsA } onSelectID={ childrenManager.createNewWithType } />
+				<Tabs items={ childTypeItemsB } onSelectID={ childrenManager.createNewWithType } />
 			</Row>
 			{
 				(!!items && items.length > 0) && (

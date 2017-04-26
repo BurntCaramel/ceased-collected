@@ -26,6 +26,8 @@ const styler = ({ fullWidth = false }) => seeds({
 export default function Tabs({
 	items, selectedID,
 	fullWidth,
+	large,
+	small,
 	onSelectID
 }) {
 	return (
@@ -38,6 +40,8 @@ export default function Tabs({
 					tab
 					title={ title }
 					primary={ selectedID === id }
+					large={ large }
+					small={ small }
 					classes={ tabClasses }
 					onClick={ !!onSelectID ? onSelectID.bind(null, id) : null }
 				/>
