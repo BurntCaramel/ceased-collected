@@ -36,7 +36,7 @@ const ScreensPreview = observer(function ScreensPreview({
 			<div>
 			{
 				!!items ? (
-					items.map(item => (console.log(item.type + ':' + item.id),
+					items.map(item => (
 						<div key={ item.type + ':' + item.id }
 							style={ style }
 						>
