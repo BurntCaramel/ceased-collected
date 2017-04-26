@@ -16,7 +16,9 @@ const {
 } = require('./convertIDs')
 
 const types = {
+	journey: 'journey',
 	collection: 'collection',
+	copy: 'copy',
 	record: 'record',
 	picture: 'picture',
 	story: 'story',
@@ -29,8 +31,8 @@ const types = {
 const itemsTable = process.env.AWS_DYNAMODB_ITEMS_TABLE
 
 const padID = (id) => padStart(String(id), 20, '0')
-const uniqueIDForTypeAndID = (type, id) => `${ type }:${ padID(userToDatabaseID(id)) }`
-const uniqueIDForOwner = (owner) => uniqueIDForTypeAndID(owner.type, owner.id)
+const uniqueIDForTypeAndDatabaseID = (type, id) => `${ type }:${ padID(id) }`
+const uniqueIDForOwner = (owner) => uniqueIDForTypeAndDatabaseID(owner.type, userToDatabaseID(owner.id))
 
 const formatID = R.pipe(
 	R.split(':'),
@@ -145,7 +147,7 @@ function readItem({ owner, type, id }) {
 		TableName: itemsTable,
 		Key: {
 			ownerID: uniqueIDForOwner(owner),
-			id: uniqueIDForTypeAndID(type, id)
+			id: uniqueIDForTypeAndDatabaseID(type, userToDatabaseID(id))
 		}
 	})
 	.map(R.prop('Item'))
@@ -154,20 +156,21 @@ function readItem({ owner, type, id }) {
 
 function createItem({ owner, type, tags = [], name = 'Untitled', contentJSON }) {
 	return incrementIDForType(type)
-	.then(({ counter: id }) => {
+	.then(({ counter: databaseID }) => {
+		const dateCreated = (new Date).toISOString()
 		return putItem({
 			TableName: itemsTable,
 			Item: {
 				ownerID: uniqueIDForOwner(owner),
-				id: uniqueIDForTypeAndID(type, id),
+				id: uniqueIDForTypeAndDatabaseID(type, databaseID),
 				type,
 				tags,
 				name,
 				contentJSON: JSON.stringify(contentJSON),
-				dateCreated: (new Date).toISOString()
+				dateCreated
 			}
 		})
-		.map(() => ({ owner, type, id, tags, name, contentJSON }))
+		.map(() => ({ owner, type, id: databaseToUserID(databaseID), tags, name, contentJSON, dateCreated }))
 	})
 }
 
@@ -177,7 +180,7 @@ function updateNameForItem({ owner, type, id, newName }) {
 		TableName: itemsTable,
 		Key: {
 			ownerID: uniqueIDForOwner(owner),
-			id: uniqueIDForTypeAndID(type, id)
+			id: uniqueIDForTypeAndDatabaseID(type, userToDatabaseID(id))
 		},
 		UpdateExpression: 'set #name = :newName',
 		ExpressionAttributeNames: {
@@ -197,7 +200,7 @@ function updateTagsForItem({ owner, type, id, newTags }) {
 		TableName: itemsTable,
 		Key: {
 			ownerID: uniqueIDForOwner(owner),
-			id: uniqueIDForTypeAndID(type, id)
+			id: uniqueIDForTypeAndDatabaseID(type, userToDatabaseID(id))
 		},
 		UpdateExpression: 'set #tags = :newTags',
 		ExpressionAttributeNames: {
@@ -229,7 +232,7 @@ function updateItemWithChanges({ owner, type, id, changes }) {
 		TableName: itemsTable,
 		Key: {
 			ownerID: uniqueIDForOwner(owner),
-			id: uniqueIDForTypeAndID(type, id)
+			id: uniqueIDForTypeAndDatabaseID(type, userToDatabaseID(id))
 		},
 		ReturnValues: 'ALL_NEW'
 	}, updateField
@@ -257,7 +260,7 @@ function deleteItem({ owner, type, id }) {
 		TableName: itemsTable,
 		Key: {
 			ownerID: uniqueIDForOwner(owner),
-			id: uniqueIDForTypeAndID(type, id)
+			id: uniqueIDForTypeAndDatabaseID(type, userToDatabaseID(id))
 		}
 	})
 }
