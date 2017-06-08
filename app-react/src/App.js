@@ -77,6 +77,7 @@ class App extends Component {
 		this.events.start()
 
 		// Google Analytics
+		// FIXME: update, and use env
 		const googleAnalyticsTrackingID = 'UA-12168665-5';
 
 		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

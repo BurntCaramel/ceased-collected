@@ -1,6 +1,7 @@
 import React from 'react'
 import Auth0LockPasswordless from 'auth0-lock-passwordless'
 import Row from '../components/Row'
+import Column from '../components/Column'
 import Button from '../components/Button'
 import { setAuthToken } from '../api'
 
@@ -51,7 +52,8 @@ export default class SignIn extends React.PureComponent {
 		return (
 			<div>
 				<header>
-					<h1>{ 'Design from content to polish' }</h1>
+					<h1>Get Started</h1>
+					<h2>{ 'Your product has several key facets. Add them to Collected and connect them together, and then share with the rest of your team.' }</h2>
 				</header>
 				<section>
 					{ error && (
@@ -59,9 +61,48 @@ export default class SignIn extends React.PureComponent {
 							<p>Error signing in: { error } { errorDescription }</p>
 						</Row>
 					) }
+					<Column measure={ 30 }>
+						<Button
+							title='Add Journey'
+							primary
+							large
+							onClick={ null }
+						/>
+						<p>
+							Map out the journey a user takes, from the message they first see about you or your problem area, to the screens of your product, to the emails they receive both today and next month.
+						</p>
+					</Column>
+					<Column measure={ 30 }>
+						<Button
+							title='Add Catalog'
+							primary
+							large
+							onClick={ null }
+						/>
+						<p>
+							Create an organized collection of elements needed to build your journeys, from user interface elements to pieces of reusable copy, to models that hold the shape of your content. 
+						</p>
+					</Column>
+					<Column measure={ 30 }>
+						<Button
+							title='Share'
+							primary
+							large
+							onClick={ null }
+						/>
+						<p>
+							Invite others to collaborate on your journeys and catalogs, send private links to your documentation, and export as PDF or static HTML.
+						</p>
+					</Column>
 					<Row justifyContent='center'>
 						<Button
-							title='Join / Sign In'
+							title='Add Service'
+							onClick={ null }
+						/>
+					</Row>
+					<Row justifyContent='center'>
+						<Button
+							title='Sign Up / In'
 							primary
 							large
 							onClick={ this.onSignIn }

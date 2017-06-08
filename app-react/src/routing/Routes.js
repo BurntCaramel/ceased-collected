@@ -6,7 +6,7 @@ import { createStoriesObservable } from '../managers/stories'
 import { createJourneysObservable } from '../managers/journeys'
 import { createCollectionsObservable } from '../managers/collections'
 import LandingPage from '../containers/LandingPage'
-import SignIn from '../containers/SignIn'
+import Go from '../containers/Go'
 import Stories from '../containers/Stories'
 import Journeys, { Journey } from '../containers/Journeys'
 import Collections from '../containers/Collections'
@@ -55,7 +55,7 @@ const ownerRoutes = {
 }
 
 const routes = {
-	'signin': () => <SignIn />,
+	'go': () => <Go />,
 	_: [
 		{
 			assign: 'isCollection',

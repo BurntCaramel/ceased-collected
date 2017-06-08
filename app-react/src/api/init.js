@@ -3,7 +3,7 @@ import { readAuthToken, storeAuthToken } from './token'
 
 const api = axios.create({
 	baseURL: process.env.REACT_APP_API_URL,
-	xsrfCookieName: 'crumb',
+	xsrfCookieName: 'crumb', // TODO: update to something less library specific?
 	xsrfHeaderName: 'X-CSRF-Token'
 })
 

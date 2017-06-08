@@ -1,12 +1,12 @@
 import React from 'react'
 import seeds from 'react-seeds'
 
-const styler = ({ wrap, alignItems, justifyContent, grow, margin }) => seeds({
+const styler = ({ measure, wrap, alignItems, justifyContent, grow, margin }) => seeds({
+	maxWidth: `${measure}rem`,
 	column: true,
 	wrap,
 	alignItems,
 	justifyContent,
-	maxWidth: '38rem',
 	grow,
 	margin
 })
@@ -14,6 +14,7 @@ const styler = ({ wrap, alignItems, justifyContent, grow, margin }) => seeds({
 export default function Column({
 	children,
 	details = false,
+	measure = 38,
 	wrap, alignItems, justifyContent,
 	grow = 1, margin
 }) {
@@ -25,7 +26,7 @@ export default function Column({
 	return (
 		<Component
 			children={ children }
-			{ ...styler({ wrap, alignItems, justifyContent, margin, grow }) }
+			{ ...styler({ measure, wrap, alignItems, justifyContent, margin, grow }) }
 		/>
 	)
 }
