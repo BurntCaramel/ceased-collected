@@ -1,0 +1,12 @@
+@owner: #one: Owner
+@type: #choice
+@name: #text
+@contentJSON: #record
+@tags: #many #text
+
+#run: @services.Dynamo.Items.createItem
+- @owner: @owner
+- @type: @type
+- @contentJSON: @contentJSON
+- @name: @name
+- @tags: @tags
