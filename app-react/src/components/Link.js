@@ -19,10 +19,9 @@ export default class Link extends React.PureComponent {
 	}
 
 	render() {
-		const { children } = this.props
-		const { path } = this
+		const { children, style } = this.props
 		return (
-			<a href={ path } onClick={ this.onClick }>{ children }</a>
+			<a href={ this.path } style={ style } onClick={ this.onClick }>{ children }</a>
 		)
 	}
 }

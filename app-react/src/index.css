@@ -67,7 +67,9 @@ section > * {
 	margin-bottom: 1.333333333rem;
 }
 
-header h1,
+header {
+	text-align: center;
+}
 header + section > h2:first-child {
 	text-align: center;
 }
@@ -81,11 +83,12 @@ header h1 {
 	font-weight: bold;
 }
 
+header h2,
 section h2 {
 	position: relative;
-	font-size: 1.2rem;
-	line-height: 1.333333333rem;
-	top: 0.13333333299999994rem;
+	font-size: 1.5rem;
+	line-height: 2rem;
+	top: 0.5rem;
 
 	font-weight: bold;
 }
