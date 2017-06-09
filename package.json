@@ -2,11 +2,12 @@
   "scripts": {
     "start": "node app.js",
     "build": "yarn run build:react",
-    "start:dev": "PORT=3010 node -r dotenv/config app.js",
-    "start:react": "cd app-react && yarn start",
     "build:react": "cd app-react && yarn run build",
+    "dev:2": "PORT=3010 node -r dotenv/config app.js",
+		"dev:api": "cd api && yarn dev",
+    "dev:react": "cd app-react && yarn start",
+		"dev": "yarn run dev:api && yarn run dev:react",
     "deploy:api": "cd api && node .deploy.js",
-    "deploy:react": "cd app-react && now -e REACT_APP_API_URL=https://1.stories.icing.space",
     "deploy:now": "now --docker --dotenv"
   },
   "engines": {

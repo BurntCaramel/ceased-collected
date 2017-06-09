@@ -6,10 +6,9 @@
   "author": "Patrick Smith",
   "license": "MIT",
   "scripts": {
-    "start": "yarn run start:dev",
-    "start:dev": "PORT=7000 NODE_ENV=development node app.js",
-    "start:prod": "node app.js",
-    "now-start": "npm run start:prod"
+		"build:elm": "elm-make elm/Main.elm -o elm/elm.js",
+    "dev": "PORT=7000 NODE_ENV=development node app.js",
+    "start": "node app.js"
   },
   "dependencies": {
     "ava": "^0.17.0",
