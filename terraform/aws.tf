@@ -158,6 +158,27 @@ data "aws_iam_policy_document" "items-dynamodb" {
   }
 }
 
+data "aws_iam_policy_document" "relations1-dynamodb" {
+  statement {
+    resources = [
+      "${aws_dynamodb_table.relations1.arn}",
+    ]
+
+    actions = [
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem",
+      "dynamodb:DeleteItem",
+      "dynamodb:GetItem",
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator",
+      "dynamodb:PutItem",
+      "dynamodb:Query",
+      "dynamodb:Scan",
+      "dynamodb:UpdateItem",
+    ]
+  }
+}
+
 resource "aws_dynamodb_table" "events" {
   name             = "Stories.Events"
   read_capacity    = 10
@@ -226,6 +247,32 @@ resource "aws_dynamodb_table" "items" {
   }
 }
 
+resource "aws_dynamodb_table" "relations1" {
+  name             = "Collected.Relations1"
+  read_capacity    = 10
+  write_capacity   = 10
+  stream_enabled   = true
+  stream_view_type = "NEW_IMAGE"
+
+  hash_key = "ownerID"
+  range_key = "hasID"
+  # e.g.
+  # org:4 / user:auth0-twitter|1667831797 Org 4 has user X
+  # user:auth0-twitter|1667831797 / org:4 User X belongs to org 4
+  # user:auth0-twitter|1667831797 / BEGINS_WITH: "org:" All orgs of user X
+  # org:4 / BEGINS_WITH "user:" All users that are part of org 4
+
+  attribute {
+    name = "ownerID"
+    type = "S"
+  }
+
+  attribute {
+    name = "hasID"
+    type = "S"
+  }
+}
+
 resource "aws_iam_access_key" "stories" {
   user = "${aws_iam_user.stories.name}"
 }
@@ -260,15 +307,21 @@ EOF
 }
 
 resource "aws_iam_user_policy" "user-stories-items-dynamodb" {
-  name   = "user-stories-itens-dynamodb"
+  name   = "collected-items-dynamodb"
   user   = "${aws_iam_user.stories.name}"
   policy = "${data.aws_iam_policy_document.items-dynamodb.json}"
 }
 
 resource "aws_iam_user_policy" "user-stories-ids-dynamodb" {
-  name   = "user-stories-ids-dynamodb"
+  name   = "collected-ids-dynamodb"
   user   = "${aws_iam_user.stories.name}"
   policy = "${data.aws_iam_policy_document.ids-dynamodb.json}"
+}
+
+resource "aws_iam_user_policy" "user-stories-relations1-dynamodb" {
+  name   = "collected-relations1-dynamodb"
+  user   = "${aws_iam_user.stories.name}"
+  policy = "${data.aws_iam_policy_document.relations1-dynamodb.json}"
 }
 
 resource "aws_iam_user_policy" "user-stories-events-dynamodb" {
@@ -299,4 +352,8 @@ output "AWS_DYNAMODB_IDS_TABLE" {
 
 output "AWS_DYNAMODB_ITEMS_TABLE" {
   value = "${aws_dynamodb_table.items.id}"
+}
+
+output "AWS_DYNAMODB_RELATIONS1_TABLE" {
+  value = "${aws_dynamodb_table.relations1.id}"
 }
