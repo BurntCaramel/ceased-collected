@@ -22,13 +22,18 @@ body {
 	-webkit-hypens: auto; -ms-hypens: auto; hypens: auto;
 }
 
-nav.primary {
+nav {
 	margin: 0 -0.5rem;
 	padding: 0.5rem 0.5rem;
-	/*background-color: #FF3D76;
-	color: #fef8fc;*/
+	background-color: rgba(255,255,255, 0.9);
+}
+nav.primary {
 	border-bottom: 1px solid #FF3D76;
-	background-color: white;
+}
+nav.sticky {
+	position: sticky;
+	top: -1px;
+	z-index: 1000;
 }
 
 header > *,
@@ -134,7 +139,10 @@ section a {
 	border-bottom: 1px solid currentColor;
 }
 section > a,
-section > button {
+section > button/*,
+nav a,
+nav button*/
+{
 	display: inline-block;
 	font-size: 1rem;
 	text-align: center;

@@ -1,9 +1,11 @@
 import Cookie from 'cookie'
 import decodeJWT from 'jwt-decode'
 
+const tokenCookieAge = 31536000
+
 let decodedAuthToken = null
 
-export function decodeAuthToken() {
+export function getDecodedAuthToken() {
 	return decodedAuthToken
 }
 
@@ -15,11 +17,17 @@ export function readAuthToken() {
 		return token
 	}
 	catch (error) {
+		decodedAuthToken = null
 		return null
 	}
 }
 
 export function storeAuthToken(token) {
-	document.cookie = Cookie.serialize('auth-token', token, { path: '/', maxAge: 31536000 })
-	decodedAuthToken = decodeJWT(token)
+	document.cookie = Cookie.serialize('auth-token', token, { path: '/', maxAge: tokenCookieAge })
+	try {
+		decodedAuthToken = decodeJWT(token)
+	}
+	catch (error) {
+		decodedAuthToken = null
+	}
 }

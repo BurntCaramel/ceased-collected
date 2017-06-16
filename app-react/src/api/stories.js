@@ -1,4 +1,4 @@
-import { fetchJSON, postJSON } from './init'
+import { fetchJSON, postJSON } from './index'
 
 
 // export function list() {

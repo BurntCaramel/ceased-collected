@@ -6,7 +6,7 @@ export default function APIErrorMessage({ error }) {
 		const { status } = error.response
 		if (status === 401) {
 			return <div>
-				<p>You are not authorized: <Link to='/signin'>sign in</Link> or request access; or the item may not exist</p>
+				<p>You are not authorized: <Link to='/go'>sign in</Link> or request access; or the item may not exist</p>
 			</div>
 		}
 		else if (status === 404) {

@@ -7,9 +7,9 @@ export default function NewsletterSignUp({}) {
 			<div className="ck_form_container ck_inline" data-ck-version="6">
 				<div className="ck_form ck_minimal">
 				<div className="ck_form_fields">
-					<h3 className="ck_form_title">Want more like this?</h3>
+					<h3 className="ck_form_title">Stay in touch</h3>
 					<article className="ck_description">
-						<p>Be in the loop when new tools and ideas are released.</p>
+						<p>Hear about new tools, updates, and guides.</p>
 					</article>
 
 					<div id="ck_success_msg"  style={{ display: 'none' }}>

@@ -1,15 +1,26 @@
 import React from 'react'
+import Row from '../components/Row'
 import Button from '../components/Button'
 import NewsletterSignUp from '../components/NewsletterSignUp'
+import GitHubIcon from 'react-icons/lib/fa/github'
+import TwitterIcon from 'react-icons/lib/fa/twitter'
 
 export default function LandingPage({ onSaveStory }) {
 	return (
 		<div>
 			<header>
 				<h1>{ 'Get design, development, and marketing on the same page' }</h1>
-				<h2>{ 'Plan your product as a team across messaging, architecture, and user journeys' }</h2>
-				<Button title='Join free' to='/go' primary large />
+				<h2>{ 'Develop your product as a team across messaging, architecture, and user journeys' }</h2>
 			</header>
+			<nav className='sticky'>
+				<Row alignItems='center' justifyContent='center'>
+					<Button title='Get started for free' to='/go' primary large />
+					<span style={{ display: 'inline-block', width: '0.666rem' }} />
+					<a children={ <GitHubIcon size={ 44 } /> } href='https://github.com/RoyalIcing/royalty-node' />
+					<span style={{ display: 'inline-block', width: '0.666rem' }} />
+					<a children={ <TwitterIcon size={ 44 } /> } href='https://twitter.com/CollectedTool' />
+				</Row>
+			</nav>
 			<section>
 				<p><strong>Start with what your user cares about:</strong> your message of how you’ll solve their problem. What will your landing page say to them? What will the first email they receive from you encourage? How easily can they get signed up and start solving those problems of theirs?</p>
 				<p>Collected speaks the various pieces of your app fluently. Work with <strong>copy, UI components, images, content models, records, screens.</strong> Organise them into collections that you share with your whole team.</p>

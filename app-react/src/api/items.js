@@ -1,4 +1,4 @@
-import { fetchJSON, postJSON, patchJSON, sendDelete } from './init'
+import { fetchJSON, postJSON, patchJSON, sendDelete } from './index'
 
 export function listItems({ owner }) {
   return fetchJSON(`/1/@${owner.type}/${owner.id}/items`)

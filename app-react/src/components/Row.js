@@ -8,16 +8,17 @@ const styler = ({
 	grow,
 	marginTop,
 	marginBottom,
-	text
-}) => seeds({
-	row: true,
-	wrap,
+	text: { align: textAlign, color } = {}
+}) => ({
+	display: 'flex', flexDirection: 'row',
+	flexWrap: wrap,
 	alignItems,
 	justifyContent,
 	maxWidth: '38rem',
-	grow,
-	margin: { left: 'auto', right: 'auto', top: marginTop, bottom: marginBottom },
-	text
+	flexGrow: grow,
+	marginLeft: 'auto', marginRight: 'auto', marginTop, marginBottom,
+	textAlign,
+	color
 })
 
 export default function Row({
@@ -38,7 +39,7 @@ export default function Row({
 	return (
 		<Component
 			children={ children }
-			{...styler({
+			style={ styler({
 					wrap,
 					alignItems,
 					justifyContent,
@@ -46,7 +47,7 @@ export default function Row({
 					marginBottom,
 					grow,
 					text
-			})}
+			}) }
 		/>
 	)
 }
