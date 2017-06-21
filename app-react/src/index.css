@@ -22,10 +22,10 @@ body {
 	-webkit-hypens: auto; -ms-hypens: auto; hypens: auto;
 }
 
-nav {
+nav.primary, nav.secondary {
 	margin: 0 -0.5rem;
 	padding: 0.5rem 0.5rem;
-	background-color: rgba(255,255,255, 0.9);
+	background-color: rgba(255,255,255, 0.94);
 }
 nav.primary {
 	border-bottom: 1px solid #FF3D76;
@@ -167,9 +167,11 @@ section > a > h2 {
 }
 
 a {
-	background-color: white;
 	text-decoration: none;
 	color: inherit;
+}
+article a {
+	background-color: white;
 }
 
 summary::-webkit-details-marker {

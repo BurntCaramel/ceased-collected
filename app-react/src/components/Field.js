@@ -41,9 +41,9 @@ function sizeTextAreaToFit(el) {
 }
 
 export default class Field extends React.PureComponent {
-	safeSizeToFit = () => {
+	safeSizeToFit() {
 		const el = this.el
-		if (el != null) { // null when unmounting
+		if (!!el) { // null when unmounting
 			if (el.tagName.toLowerCase() === 'textarea') {
 				sizeTextAreaToFit(el)
 			}

@@ -69,6 +69,12 @@ export default class SignIn extends React.PureComponent {
 					{ !!token && (
 						<section>
 							<Column measure={ 30 }>
+								<h3>Connect</h3>
+								<Button
+									title='GitHub'
+								/>
+							</Column>
+							<Column measure={ 30 }>
 								<Button
 									title='Add Journey'
 									primary
