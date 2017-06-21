@@ -7,6 +7,7 @@ import { createJourneysObservable } from '../managers/journeys'
 import { createCollectionsObservable } from '../managers/collections'
 import LandingPage from '../pages/Landing'
 import Go from '../organisms/Go'
+import Org from '../organisms/Org'
 import Stories from '../organisms/Stories'
 import Journeys, { Journey } from '../organisms/Journeys'
 import Collections from '../organisms/Collections'
@@ -19,7 +20,11 @@ const ownerRoutes = {
 		<div>
 			<OwnerNav owner={ owner } />
 			{
-				owner.type === types.collection ? (
+				owner.type === types.organization ? (
+					<Org
+						id={ owner.id }
+					/>
+				) : owner.type === types.collection ? (
 					<Collections
 						collectionsManager={ collectionsManager }
 						itemID={ owner.id }

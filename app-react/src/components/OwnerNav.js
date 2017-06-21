@@ -7,10 +7,10 @@ import * as types from '../constants/itemTypes'
 
 function renderOwnerType(type) {
 	switch (type) {
-	case types.journey: return 'Journey'
-	case types.collection: return 'Collection'
-	case types.organization: return 'Org'
-	default: return type
+	case types.journey: return 'Journey '
+	case types.collection: return 'Collection '
+	case types.organization: return '@'
+	default: return type + ' '
 	}
 }
 
@@ -65,7 +65,7 @@ export default function OwnerNav({
 								onCommitValue={ onChangeName }
 							/>
 						) : (
-							<span>{ renderOwnerType(type) } { id }</span>
+							<span>{ renderOwnerType(type) }{ id }</span>
 						)
 					}
 					{ sectionTitle && <span> · { sectionTitle }</span> }
