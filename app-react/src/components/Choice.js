@@ -1,19 +1,19 @@
 import React from 'react'
-import seeds, { appearanceNone } from 'react-seeds'
 import Label from './Label'
 import * as colors from './colors'
 
 const styles = {
     select: ({ hasTitle, grow, width }) => ({
-        grow,
+        flexGrow: grow,
         width,
-        margin: { left: hasTitle ? '0.5em' : null },
-        font: { size: '1rem' },
-        text: { lineHeight: '1.3rem', color: colors.action.normal },
-        padding: { left: '0.25em', right: '0.25em' },
-        background: { color: colors.lightness.normal },
-        border: { color: colors.action.normal, width: 1, style: 'solid' },
-        cornerRadius: 2
+        marginLeft: hasTitle ? '0.5em' : null,
+        fontSize: '1rem',
+        lineHeight: '1.3rem', color: colors.action.normal,
+        paddingLeft: '0.25em', paddingRight: '0.25em',
+        backgroundColor: colors.lightness.normal,
+        borderColor: colors.action.normal, borderWidth: 1, borderStyle: 'solid',
+				borderRadius: 2,
+				webkitAppearance: 'none'
     })
 }
 
@@ -23,11 +23,11 @@ export default function Choice({ chosenID, choices, title, grow, width, onChange
         <select
             value={ chosenID }
             onChange={ onChange }
-            { ...seeds(styles.select({
+            style={ styles.select({
                 hasTitle,
                 grow,
                 width
-            })) }
+            }) }
         >
         {
             choices.map(({ title, id }) => (

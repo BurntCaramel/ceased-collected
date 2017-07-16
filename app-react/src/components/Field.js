@@ -1,6 +1,5 @@
 import React from 'react'
 import { findDOMNode } from 'react-dom'
-import seeds from 'react-seeds'
 import Label from './Label'
 import * as colors from './colors'
 import * as visualStylers from './visualStylers'
@@ -16,18 +15,17 @@ const stylers = {
 		font = defaultFont,
 		transparent = false
 	}) => ({
-		style: {
-			...seeds({
-				grow,
-				width,
-				margin: { left: hasTitle ? '0.5em' : null },
-				font,
-				text: { lineHeight: '1.3rem', color: colors.action.normal },
-				padding: { base: rows > 1 ? '0.25em' : '0.125em', left: '0.25em', right: 0 },
-				cornerRadius: 2
-			}).style,
-			...(transparent ? visualStylers.transparent.style : visualStylers.field.style)
-		}
+		flexGrow: grow,
+		width,
+		marginLeft: hasTitle ? '0.5em' : null,
+		fontSize: font.size,
+		lineHeight: '1.3rem', color: colors.action.normal,
+		paddingTop: rows > 1 ? '0.25em' : '0.125em',
+		paddingBottom: rows > 1 ? '0.25em' : '0.125em',
+		paddingLeft: '0.25em',
+		paddingRight: 0,
+		borderRadius: 2,
+		...(transparent ? visualStylers.transparent.style : visualStylers.field.style)
 	})
 }
 
@@ -71,7 +69,7 @@ export default class Field extends React.PureComponent {
 				onChange={ onChange }
 				onKeyDown={ onKeyDown }
 				{ ...(rows === 1 ? null : { rows }) }
-				{ ...stylers.input({
+				style={ stylers.input({
 					hasTitle,
 					grow,
 					rows,

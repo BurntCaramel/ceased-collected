@@ -1,17 +1,16 @@
 import React from 'react'
-import seeds from 'react-seeds'
 
-const style = seeds({
-	row: true,
+const style = {
+	display: 'flex', flexDirection: 'row',
 	alignItems: 'baseline',
 	justifyContent: 'center',
-	text: { lineHeight: '1.3rem' }
-})
+	lineHeight: '1.3rem'
+}
 
 export default function Label({ title, children }) {
 	return (
 		(title != null) ? (
-			<label { ...style }>
+			<label style={ style }>
 				<span>{ title }</span>
 				&nbsp;
 				{ children }

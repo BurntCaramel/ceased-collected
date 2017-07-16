@@ -1,5 +1,4 @@
 import React from 'react'
-import seeds from 'react-seeds'
 import Row from './Row'
 import Field from './Field'
 import ToggleEdit from './ToggleEdit'
@@ -15,13 +14,13 @@ function renderOwnerType(type) {
 }
 
 const stylers = {
-	heading: seeds({
-		row: 1,
-		grow: 1,
-		margin: { right: '0.5rem' },
-		font: { size: '1rem', weight: 700 },
+	heading: {
+		display: 'flex', flexDirection: 'row',
+		flexGrow: 1,
+		marginRight: '0.5rem',
+		fontSize: '1rem', fontWeight: 700,
 		lineHeight: 1.2
-	})
+	}
 }
 
 function NameNormal({
@@ -53,7 +52,7 @@ export default function OwnerNav({
 	return (
 		<nav className='primary'>
 			<Row alignItems='baseline'>
-				<h2 { ...stylers.heading }>
+				<h2 style={ stylers.heading }>
 					{
 						!!statusMessage ? (
 							<span>{ statusMessage }</span>

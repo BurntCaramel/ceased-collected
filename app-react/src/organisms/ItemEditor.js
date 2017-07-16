@@ -1,15 +1,14 @@
 import React from 'react'
 import { observable, action, reaction } from 'mobx'
 import { observer } from 'mobx-react'
-import seeds from 'react-seeds'
 import Row from '../components/Row'
 import Column from '../components/Column'
 import Button from '../components/Button'
 import Field from '../components/Field'
 
-const headerStyler = seeds({
-	row: true
-})
+const headerStyle = {
+	display: 'flex', flexDirection: 'row'
+}
 
 const ItemEditor = observer(class ItemEditor extends React.Component {
 	constructor(props) {
@@ -89,7 +88,7 @@ const ItemEditor = observer(class ItemEditor extends React.Component {
 			}}>
 				<Row wrap justifyContent='flex-end'>
 					<Row details>
-						<summary {...headerStyler}>
+						<summary style={ headerStyle }>
 							<Field
 								value={ name }
 								grow={ 1 }

@@ -2,6 +2,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	font-size: inherit;
 }
 
 html {
@@ -89,7 +90,8 @@ header h1 {
 }
 
 header h2,
-section h2 {
+section h2,
+article h2 {
 	position: relative;
 	font-size: 1.5rem;
 	line-height: 2rem;
@@ -98,6 +100,7 @@ section h2 {
 	font-weight: bold;
 }
 section h3,
+article h3,
 section nav dt {
 	text-transform: uppercase;
 	font-weight: bold;

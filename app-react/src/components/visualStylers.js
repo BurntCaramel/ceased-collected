@@ -1,12 +1,11 @@
-import seeds from 'react-seeds'
 import * as colors from './colors'
 
-export const field = seeds({
-	background: { color: colors.lightness.normal },
-	border: { color: colors.action.normal, width: 1, style: 'solid' },
-})
+export const field = {
+	backgroundColor: colors.lightness.normal,
+	borderColor: colors.action.normal, borderWidth: 1, borderStyle: 'solid',
+}
 
-export const transparent = seeds({
+export const transparent = {
 	background: 'transparent',
 	border: 'none',
-})
+}

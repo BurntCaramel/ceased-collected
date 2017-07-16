@@ -1,7 +1,15 @@
 import React from 'react'
-import Gateau from 'gateau/lib/Main'
 import createStateManager from 'gateau/lib/createStateManager'
 import * as storiesAPI from '../api/stories'
+
+let Gateau;
+// import('gateau/lib/Main')
+// 	.then(result => {
+// 		Gateau = result.default
+// 	})
+// 	.catch(error => {
+		
+// 	})
 
 function createStateManagerWithProps({ initialJSON, initialPreviewDestination }) {
 	const manager = createStateManager()
@@ -89,11 +97,11 @@ export default class StoryEditor extends React.Component {
 										{ 'Delete' }
 									</button>
 								}
-								<Gateau
+								{ Gateau && <Gateau
 									stateManager={ this.gateauStateManager }
 									previewOnly={ previewOnly }
 									backgroundColor='transparent'
-								/>
+								/> }
 							</section>
 						)
 					) : (

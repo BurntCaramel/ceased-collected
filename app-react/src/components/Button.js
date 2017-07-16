@@ -1,5 +1,4 @@
 import React from 'react'
-import seeds from 'react-seeds'
 import * as colors from './colors'
 import Link from './Link'
 

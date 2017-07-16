@@ -1,5 +1,4 @@
 import React from 'react'
-import seeds from 'react-seeds'
 
 const styler = ({
 	wrap,
@@ -25,6 +24,8 @@ export default function Row({
 	children,
 	section = false,
 	details = false,
+	summary = false,
+	open = null,
 	wrap, alignItems, justifyContent,
 	grow = 1, marginTop = 0, marginBottom = 0,
 	text
@@ -34,11 +35,14 @@ export default function Row({
 			'section'
 		) : details ? (
 			'details'
+		) : summary ? (
+			'summary'
 		) : 'div'
 	)
 	return (
 		<Component
 			children={ children }
+			open={ open }
 			style={ styler({
 					wrap,
 					alignItems,

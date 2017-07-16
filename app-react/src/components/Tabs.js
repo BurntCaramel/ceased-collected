@@ -1,5 +1,4 @@
 import React from 'react'
-import seeds from 'react-seeds'
 import { fallow } from 'react-sow/dom'
 import Button from './Button'
 import * as colors from './colors'
@@ -14,13 +13,13 @@ const tabClasses = [
 	})
 ]
 
-const styler = ({ fullWidth = false }) => seeds({
-	row: true,
-	grow: fullWidth ? 1 : 0,
+const styler = ({ fullWidth = false }) => ({
+	display: 'flex', flexDirection: 'row',
+	flexGrow: fullWidth ? 1 : 0,
 	overflow: 'hidden',
-	border: { width: 1, style: 'solid', color: colors.action.normal },
+	borderWidth: 1, borderStyle: 'solid', borderColor: colors.action.normal,
 	//cornerRadius: fullWidth ? 0 : 5
-	cornerRadius: 5
+	borderRadius: 5
 })
 
 export default function Tabs({

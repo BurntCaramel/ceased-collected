@@ -1,10 +1,17 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import { parseElement } from 'lofi'
-import Screen from 'gateau/lib/screen/Screen'
 import Row from '../components/Row'
 import * as PreviewTypes from './PreviewTypes'
 
+let Screen;
+// import('gateau/lib/screen/Screen')
+// 	.then(result => {
+// 		Screen = result.default
+// 	})
+// 	.catch(error => {
+
+// 	})
 
 function parseScreenItem(item) {
 	return item.contentJSON.body.split('\n\n').map(section => section.split('\n').map(parseElement))
@@ -40,12 +47,12 @@ const ScreensPreview = observer(function ScreensPreview({
 						<div key={ item.type + ':' + item.id }
 							style={ style }
 						>
-							<Screen
+							{ Screen && <Screen
 								contentTree={ parseScreenItem(item) }
 								ingredients={ [] }
 								destinationID={ stateManager.previewType }
 								height={ shrinkHeight ? 'auto' : 600 }
-							/>
+							/> }
 						</div>
 					))
 				) : (

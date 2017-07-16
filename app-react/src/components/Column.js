@@ -1,19 +1,19 @@
 import React from 'react'
-import seeds from 'react-seeds'
 
-const styler = ({ measure, wrap, alignItems, justifyContent, grow, margin }) => seeds({
+const makeStyle = ({ measure, wrap, alignItems, justifyContent, grow, margin }) => ({
+	display: 'flex', flexDirection: 'column',
 	maxWidth: `${measure}rem`,
-	column: true,
-	wrap,
+	flexWrap: wrap,
 	alignItems,
 	justifyContent,
-	grow,
+	flexGrow: grow,
 	margin
 })
 
 export default function Column({
 	children,
 	details = false,
+	open = null,
 	measure = 38,
 	wrap, alignItems, justifyContent,
 	grow = 1, margin
@@ -26,7 +26,8 @@ export default function Column({
 	return (
 		<Component
 			children={ children }
-			{ ...styler({ measure, wrap, alignItems, justifyContent, margin, grow }) }
+			open={ open }
+			style={ makeStyle({ measure, wrap, alignItems, justifyContent, margin, grow }) }
 		/>
 	)
 }
